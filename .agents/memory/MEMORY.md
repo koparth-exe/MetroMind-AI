@@ -1,0 +1,1 @@
+- [Bundled module initialization](module-initialization.md) — top-level demo data must initialize only after referenced const helpers are initialized.
