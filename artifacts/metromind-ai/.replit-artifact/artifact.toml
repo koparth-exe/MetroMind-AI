@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "MetroMind AI"
+description = "A mathematical decision-support prototype for public transport demand forecasting, overcrowding risk analysis, Fourier pattern detection, and optimized bus allocation."
+version = "1.0.0"
+id = "artifacts/metromind-ai"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23281
+
+[services.development]
+run = "pnpm --filter @workspace/metromind-ai run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/metromind-ai", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/metromind-ai/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23281"
+BASE_PATH = "/"

@@ -1,0 +1,815 @@
+Build a complete, production-quality full-stack web application called:
+
+METROMIND AI
+“AI-Driven Public Transport Demand Prediction & Mathematical Resource Optimization”
+
+IMPORTANT:
+I have attached a PDF containing the complete project specification. Use that PDF as the PRIMARY source of truth for the project's concept, mathematical modules, workflow, terminology and features. Do not turn this into a generic transport dashboard.
+
+GOAL:
+Create a fast, modern, fully functional web application for my college Mathematics mini-project.
+
+The core pipeline must be:
+
+Historical Data
+→ Data Analysis
+→ Correlation & Regression
+→ AI Demand Prediction
+→ Probability / Overcrowding Risk
+→ Fourier Analysis
+→ Linear Programming Optimization
+→ Recommended Resource Allocation
+→ What-If Simulation
+→ AI Explanation
+
+The application must actually calculate these values. Do NOT use fake/hardcoded numbers for the core functionality.
+
+==================================================
+1. TECH STACK
+==================================================
+
+Use a fast and student-friendly stack:
+
+FRONTEND:
+- React
+- Vite
+- TypeScript
+- Tailwind CSS
+- Recharts
+- Leaflet + OpenStreetMap
+
+BACKEND:
+- Python
+- FastAPI
+- Pandas
+- NumPy
+- SciPy
+- scikit-learn
+- PuLP or SciPy optimization for Linear Programming
+
+DATABASE:
+- SQLite
+
+AI:
+- Gemini API for natural-language explanations only.
+- The actual demand prediction must be performed by a real local ML model using scikit-learn.
+- Never allow the LLM to invent mathematical results.
+
+WEATHER:
+- Open-Meteo API.
+- Do NOT require a paid weather API.
+
+MAP:
+- Leaflet + OpenStreetMap.
+- Do NOT require Google Maps API.
+
+The application should work locally without any paid services.
+
+==================================================
+2. API KEY CONFIGURATION
+==================================================
+
+Create a secure backend .env configuration:
+
+GEMINI_API_KEY=
+
+Do NOT expose the Gemini API key to the frontend.
+
+If the API key is missing:
+- The entire application must still work.
+- Only the AI Explanation feature should show a message that the Gemini API is not configured.
+- All mathematical calculations, prediction, optimization and charts must continue working.
+
+Never hardcode API keys.
+
+==================================================
+3. MAIN APPLICATION PAGES
+==================================================
+
+Create these pages:
+
+1. Dashboard
+2. Data Upload
+3. Mathematical Analysis
+4. Demand Prediction
+5. Probability & Risk
+6. Fourier Analysis
+7. Resource Optimization
+8. What-If Simulator
+9. Model Comparison
+10. Routes / Transport Map
+11. AI Insights
+12. Settings / System Information
+
+Use a professional sidebar navigation.
+
+==================================================
+4. DASHBOARD
+==================================================
+
+Create a polished dashboard showing:
+
+- Total predicted passenger demand
+- Number of high-risk routes
+- Average overcrowding probability
+- Available buses
+- Total required capacity
+- Recommended additional buses
+
+Show a route table:
+
+Route
+Predicted Demand
+Available Capacity
+Utilization
+Overcrowding Probability
+Risk
+Recommendation
+
+Example:
+
+R1 | 1560 | 1400 | 111.4% | 83% | HIGH | +2 buses
+
+BUT:
+These values must be dynamically calculated from the selected dataset/scenario.
+
+Add:
+- Demand trend chart
+- Route comparison chart
+- Risk distribution
+- Capacity vs predicted demand chart
+- Recent analysis summary
+
+==================================================
+5. DATA UPLOAD
+==================================================
+
+Allow the user to upload CSV files.
+
+Expected possible columns:
+
+timestamp
+route_id
+station_id
+passenger_count
+day_of_week
+is_weekend
+is_holiday
+temperature
+rainfall
+special_event
+vehicle_capacity
+
+Build robust dataset validation.
+
+Show:
+- Number of records
+- Routes detected
+- Stations detected
+- Missing values
+- Invalid values
+- Date range
+- Average passenger count
+- Maximum demand
+- Dataset quality status
+
+Allow the user to download/use a sample dataset so the application can be demonstrated immediately.
+
+Include a “Load Demo Dataset” button.
+
+The demo dataset should contain realistic synthetic public-transport data and clearly label it as DEMO/SYNTHETIC DATA.
+
+==================================================
+6. MATHEMATICAL ANALYSIS
+==================================================
+
+This is a MATHEMATICS project.
+
+Make the mathematics highly visible.
+
+Implement:
+
+A. Pearson Correlation
+B. Spearman Rank Correlation
+C. Regression Analysis
+D. Probability
+E. Fourier Analysis
+F. Linear Programming Optimization
+
+For correlation show:
+
+Variable
+Correlation coefficient
+Relationship strength
+Interpretation
+
+Examples:
+Rainfall vs Demand
+Temperature vs Demand
+Time vs Demand
+Weekday vs Demand
+
+Calculate everything from the uploaded dataset.
+
+Show formulas where useful.
+
+For example:
+
+Pearson correlation:
+r = covariance(X,Y) / (σX σY)
+
+Do not merely display a number. Explain what the number means.
+
+==================================================
+7. AI DEMAND PREDICTION
+==================================================
+
+Create a real ML prediction pipeline.
+
+Use historical data to predict passenger demand.
+
+Possible models:
+
+- Linear Regression
+- Random Forest Regressor
+- Gradient Boosting Regressor
+
+Train multiple models and evaluate them.
+
+Features can include:
+- hour
+- day of week
+- weekend
+- holiday
+- temperature
+- rainfall
+- special event
+- route
+- station
+
+Show:
+
+Predicted Demand
+Historical Average
+Difference
+Percentage Difference
+Model Used
+Prediction confidence/uncertainty where statistically justified
+
+Do NOT claim unrealistic accuracy.
+
+Use proper train/test splitting and calculate:
+
+MAE
+RMSE
+R²
+
+==================================================
+8. MODEL COMPARISON
+==================================================
+
+Create a model comparison page.
+
+Display:
+
+Model | MAE | RMSE | R²
+
+Automatically identify the best-performing model based on an appropriate metric.
+
+Allow the user to select the model used for prediction.
+
+Do not fabricate model performance.
+
+==================================================
+9. PROBABILITY / OVERCROWDING RISK
+==================================================
+
+Calculate the probability that predicted demand exceeds available capacity.
+
+The application should distinguish:
+
+LOW
+MEDIUM
+HIGH
+
+risk.
+
+Show:
+
+Predicted demand
+Capacity
+Capacity utilization
+Probability of exceeding capacity
+Risk classification
+
+Do not simply assign arbitrary percentages.
+
+Use an appropriate statistical approach based on the available historical prediction errors/residuals.
+
+Clearly explain the assumptions used by the probability model.
+
+==================================================
+10. FOURIER ANALYSIS
+==================================================
+
+Implement Fourier/FFT-based periodic demand analysis.
+
+Use time-series passenger demand.
+
+Show:
+
+- Actual demand
+- Dominant periodic components
+- Frequency spectrum
+- Identified repeating patterns
+
+Highlight patterns such as:
+
+Morning peak
+Midday decline
+Evening peak
+Night decline
+
+Fourier analysis should be presented as a PATTERN ANALYSIS module, not necessarily the main forecasting model.
+
+Explain the mathematical purpose of Fourier analysis in simple language.
+
+==================================================
+11. LINEAR PROGRAMMING OPTIMIZATION
+==================================================
+
+This is one of the most important modules.
+
+Given:
+
+- predicted demand per route
+- vehicle capacity
+- available buses
+- minimum service requirements
+- maximum buses per route
+
+calculate the optimal bus allocation.
+
+Objective:
+
+Minimize overcrowding + unused capacity + operating/resource cost
+
+subject to constraints.
+
+The exact objective function and constraints should be visible to the user.
+
+Example:
+
+Available buses = 30
+
+Routes:
+R1
+R2
+R3
+R4
+
+The system should calculate the optimal allocation dynamically.
+
+DO NOT hardcode:
+
+R1 → 12
+R2 → 8
+R3 → 6
+R4 → 4
+
+Those are only examples from the project specification.
+
+Use an actual Linear Programming solver.
+
+Show:
+
+Before Optimization
+After Optimization
+Bus allocation
+Capacity utilization
+Overcrowding
+Unused capacity
+Objective value
+
+==================================================
+12. WHAT-IF SIMULATOR
+==================================================
+
+Create a highly interactive simulator.
+
+Allow the operator to change:
+
+- Number of available buses
+- Rainfall
+- Temperature
+- Holiday status
+- Special event
+- Demand multiplier
+- Route constraints
+
+Example:
+
+Scenario:
+“3 buses unavailable”
+
+30 buses → 27 buses
+
+Then recalculate:
+
+Demand
+Risk
+Capacity
+Optimal allocation
+Recommendations
+
+Other scenarios:
+
+“Heavy rainfall tomorrow”
+
+“Major event near R3”
+
+The entire mathematical pipeline should recalculate.
+
+Show a comparison:
+
+BASELINE vs SCENARIO
+
+with charts.
+
+This should be one of the strongest features of the application.
+
+==================================================
+13. TRANSPORT MAP
+==================================================
+
+Use Leaflet + OpenStreetMap.
+
+Do NOT require Google Maps.
+
+Create a demo transport network with routes and stations.
+
+Display routes using risk/demand status:
+
+Low risk
+Medium risk
+High risk
+
+Clicking a route should show:
+
+Route name
+Predicted demand
+Capacity
+Utilization
+Risk
+Recommended buses
+
+If actual geographic coordinates aren't available in the uploaded dataset, use demo coordinates and clearly indicate that they are demonstration coordinates.
+
+==================================================
+14. AI EXPLANATION
+==================================================
+
+Add an AI Explanation panel.
+
+Gemini should receive already-calculated results from the backend and explain them.
+
+Example:
+
+“Route R1 is predicted to experience elevated demand tomorrow. Its predicted demand exceeds the available capacity, resulting in a high overcrowding risk. The optimization engine therefore recommends additional capacity for R1.”
+
+IMPORTANT:
+
+Gemini must NOT calculate or invent:
+- correlation values
+- probabilities
+- predictions
+- optimization results
+
+The Python mathematics/ML engine calculates those values first.
+
+Gemini only explains them.
+
+Also display:
+
+MATHEMATICAL EVIDENCE
+
+separately from:
+
+AI-GENERATED EXPLANATION
+
+==================================================
+15. USER ROLES
+==================================================
+
+Implement a simple role-based interface:
+
+PASSENGER:
+- View route information
+- View predicted crowd levels
+- See expected demand
+- Find less crowded times/routes
+
+TRANSPORT OPERATOR:
+- View predictions
+- View risks
+- Simulate allocation
+- Run optimization
+- Use What-If Simulator
+
+ADMIN:
+- Upload datasets
+- Configure routes
+- Manage stations
+- Configure vehicle capacities
+- View system information
+
+For a college prototype, authentication can be lightweight/local. Do not introduce complicated paid authentication systems.
+
+==================================================
+16. PASSENGER VIEW
+==================================================
+
+Create a passenger-friendly page where the user selects:
+
+Route
+Date
+Time
+
+Then display:
+
+Expected demand
+Crowding level
+Estimated utilization
+Recommended less-crowded time
+
+If multiple routes exist, show alternative route information when possible.
+
+==================================================
+17. UI / DESIGN
+==================================================
+
+Make the interface look like a modern AI analytics platform.
+
+Design style:
+
+- Professional
+- Clean
+- Modern
+- Dark navy/teal visual identity
+- Subtle gradients
+- Glass/modern cards
+- Excellent charts
+- Responsive
+- Desktop-first but mobile-friendly
+
+Do NOT make it look like a generic Bootstrap admin template.
+
+Use animations sparingly.
+
+Add:
+- loading states
+- skeleton loaders
+- error states
+- empty states
+- success notifications
+- tooltips
+- responsive tables
+- smooth page transitions
+
+The interface should feel like a real decision-support system.
+
+==================================================
+18. PERFORMANCE
+==================================================
+
+Performance is important.
+
+Requirements:
+
+- Fast initial load
+- Lazy-load heavy pages/components
+- Avoid unnecessary API requests
+- Cache dataset analysis when possible
+- Perform ML calculations in the Python backend
+- Avoid sending entire datasets repeatedly
+- Use efficient Pandas/NumPy operations
+- Use asynchronous FastAPI endpoints where appropriate
+- Debounce simulator inputs
+- Charts should remain responsive
+
+The application should work smoothly on a normal student laptop.
+
+==================================================
+19. ACCURACY / ACADEMIC INTEGRITY
+==================================================
+
+This is a Mathematics mini-project.
+
+NEVER:
+- fabricate results
+- hardcode mathematical outputs
+- pretend synthetic data is real-world data
+- claim AI guarantees overcrowding prevention
+- claim the system controls an actual city's transport network
+
+Clearly label:
+
+“Prototype / Decision-Support System”
+
+and:
+
+“Demo results are based on uploaded or synthetic data.”
+
+Every important mathematical result must be reproducible from the dataset.
+
+==================================================
+20. EXPLANATION / VIVA MODE
+==================================================
+
+Add an optional “Explain This” button throughout the application.
+
+For example:
+
+“What is Pearson Correlation?”
+
+“What does RMSE mean?”
+
+“Why is this route high risk?”
+
+“Why did the optimizer assign 8 buses?”
+
+“What does Fourier analysis show?”
+
+Use simple explanations suitable for a college viva.
+
+For mathematical results, explanations should reference the actual calculated values.
+
+==================================================
+21. BACKEND API
+==================================================
+
+Create clean FastAPI endpoints such as:
+
+/api/data/upload
+/api/data/summary
+/api/analysis/correlation
+/api/analysis/regression
+/api/analysis/fourier
+/api/prediction/train
+/api/prediction/predict
+/api/risk/calculate
+/api/optimization/solve
+/api/simulation/run
+/api/models/compare
+/api/routes
+/api/ai/explain
+
+Use Pydantic schemas.
+
+Add proper error handling and validation.
+
+==================================================
+22. DATABASE
+==================================================
+
+Use SQLite.
+
+Store:
+
+datasets
+routes
+stations
+vehicles/capacities
+predictions
+analysis results
+simulation scenarios
+
+Keep the schema simple and maintainable.
+
+==================================================
+23. DEMO MODE
+==================================================
+
+This is VERY IMPORTANT.
+
+The website must be usable immediately after installation.
+
+Include a “Demo Mode”.
+
+On first launch:
+
+Show:
+
+“Load MetroMind Demo”
+
+After clicking it, automatically load a realistic synthetic dataset and populate the dashboard.
+
+The examiner should be able to demonstrate the complete project without uploading anything.
+
+Demo flow:
+
+1. Load Demo Dataset
+2. Show correlations
+3. Show Fourier pattern
+4. Select tomorrow's conditions
+5. Predict demand
+6. Calculate overcrowding probability
+7. Optimize bus allocation
+8. Open What-If Simulator
+9. Remove 3 buses
+10. Recalculate
+11. Show before vs after
+12. Generate AI explanation
+
+==================================================
+24. PROJECT DOCUMENTATION
+==================================================
+
+Generate:
+
+README.md
+
+including:
+
+- Project overview
+- Architecture
+- Technology stack
+- Installation
+- Environment variables
+- How to run frontend
+- How to run backend
+- Dataset format
+- Mathematical methods
+- ML models
+- Optimization formulation
+- API documentation
+- Demo instructions
+- Limitations
+- Academic assumptions
+
+Also include comments in important mathematical/ML code explaining the formulas and reasoning.
+
+==================================================
+25. SECURITY
+==================================================
+
+- Never expose API keys
+- Validate uploaded files
+- Limit upload size
+- Sanitize inputs
+- Validate numerical ranges
+- Don't execute uploaded files
+- Handle malformed CSV files gracefully
+
+==================================================
+26. FINAL REQUIREMENT
+==================================================
+
+DO NOT just create the frontend.
+
+Build the COMPLETE WORKING APPLICATION:
+
+React frontend
++
+FastAPI backend
++
+SQLite database
++
+Real ML prediction
++
+Real mathematical calculations
++
+Real probability calculation
++
+Real Fourier analysis
++
+Real Linear Programming optimization
++
+What-If simulator
++
+Leaflet map
++
+Optional Gemini AI explanation
+
+All buttons must perform real actions.
+
+No dead buttons.
+No fake charts.
+No placeholder dashboards.
+No hardcoded prediction results.
+No “coming soon” sections for core features.
+
+If a feature cannot be implemented exactly, implement the simplest mathematically valid version and clearly document the assumption.
+
+The final application should look impressive enough for a college project demonstration while remaining academically defensible.
+
+The central concept must remain:
+
+UNDERSTAND
+→ PREDICT
+→ QUANTIFY UNCERTAINTY
+→ OPTIMIZE
+→ RECOMMEND
+→ SIMULATE
+
+Use the attached MetroMind AI PDF throughout development as the project specification.
