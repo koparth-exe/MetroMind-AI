@@ -403,16 +403,17 @@ export function solveOptimization(predictions: Prediction[], availableBuses: num
 export function insights(predictions: Prediction[], availableBuses = TOTAL_BUSES) {
   const optimization = solveOptimization(predictions, availableBuses, BUS_CAPACITY, 2, 14);
   const error = Math.max(...predictions.map((prediction) => prediction.upperBound - prediction.predictedDemand), 40);
+  const baselineBuses = Math.max(1, Math.floor(availableBuses / ROUTES.length));
   return ROUTES.map((route, index) => {
     const prediction = predictions[index];
     const optimized = optimization.routes[index];
-    const risk = riskFor(prediction, optimized.capacity, error);
-    const baselineBuses = Math.max(1, Math.floor(availableBuses / ROUTES.length));
+    const baselineCapacity = baselineBuses * BUS_CAPACITY;
+    const risk = riskFor(prediction, baselineCapacity, error);
     return {
       ...route,
       predictedDemand: prediction.predictedDemand,
       historicalAverage: prediction.historicalAverage,
-      capacity: optimized.capacity,
+      capacity: baselineCapacity,
       utilization: risk.utilization,
       overcrowdingProbability: risk.probability,
       risk: risk.risk,
