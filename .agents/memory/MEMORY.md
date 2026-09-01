@@ -1,0 +1,2 @@
+- [Bundled module initialization](module-initialization.md) — top-level demo data must initialize only after referenced const helpers are initialized.
+- [Baseline risk interpretation](baseline-risk.md) — evaluate route risk against current fleet capacity; keep optimized allocation as the proposed remedy.

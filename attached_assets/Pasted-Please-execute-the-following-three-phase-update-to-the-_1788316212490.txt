@@ -1,0 +1,22 @@
+Please execute the following three-phase update to the MetroMind codebase. Do not remove existing features; build upon the current FastAPI and Tailwind architecture.
+
+**Phase 1: Fix Gemini API Integration (Insights Block)**
+* **Backend:** Fix the backend endpoint (e.g., `/api/insights/explain`). Ensure it correctly imports and initializes the `google-generativeai` SDK using `os.environ.get("GEMINI_API_KEY")`. Bind it to the `gemini-1.5-flash` model.
+* **Execution:** The endpoint must accept the current mathematical evidence metrics and return a concise, 3-4 bullet-point operational review.
+* **Frontend:** Resolve the configuration error when clicking "Explain with AI". Show a clean loading skeleton state, then render the AI response and update the status badge to `AI GENERATED (Gemini 1.5 Flash)`.
+
+**Phase 2: Multi-Modal Transit Toggle (Bus vs. Railway)**
+* **Global Toggle:** Add a "Transport Mode" toggle switch in the top header navigation to select either **Bus Network** or **Railway Network**.
+* **Railway Mode:** Retain the current Mumbai Suburban Rail data (R1-R4), the existing Leaflet map coordinates, and maximum train capacities of 3,000 passengers.
+* **Bus Mode:** Create a secondary dataset for local bus routes:
+  - B1: Vashi to Dadar
+  - B2: Panvel to Thane
+  - B3: Kharghar to CBD Belapur
+  - B4: Airoli to Vashi
+* **Bus Logic:** Set maximum bus capacity to 70 passengers. Adjust the baseline demand generation multipliers so the crowding and risk logic accurately scales down to standard bus volumes.
+* **Reactivity:** Toggling the mode must dynamically update the Leaflet map (shifting polylines and station markers), the "Routes" intelligence panel, and all charts in the Overview, Prediction, and Risk pages without reloading the application.
+
+**Phase 3: Terminal-Inspired Dark Mode & UI Polish**
+* **Tailwind Configuration:** Enable `darkMode: 'class'` in `tailwind.config.js`.
+* **Toggle Logic:** Add a Sun/Moon SVG theme toggle button at the bottom of the left sidebar. Wire it to toggle the `dark` class on the `<html>` tag and save the preference to `localStorage`.
+* **Aesthetic:** Apply a sleek, terminal-inspired dark theme. Use high-contrast dark backgrounds (`dark:bg-slate-950`), slightly lighter cards (`dark:bg-slate-900`), and crisp text (`dark:text-slate-200`). Shift accent colors to vibrant neon hues to ensure data highlights pop against the dark interface.
