@@ -30,56 +30,70 @@ type Prediction = {
   upperBound: number;
 };
 
-const BUS_CAPACITY = 160;
-const TOTAL_BUSES = 32;
+const TRAIN_CAPACITY = 3000;
+const TOTAL_TRAINS = 4;
+// Keep the existing API field names for backwards compatibility while the
+// product models train sets as the allocatable fleet unit.
+const BUS_CAPACITY = TRAIN_CAPACITY;
+const TOTAL_BUSES = TOTAL_TRAINS;
 const ROUTES = [
   {
     routeId: "R1",
-    name: "North Loop",
-    color: "#56d6c2",
-    stations: ["Civic Centre", "University", "North Gate"],
+    name: "Central Line",
+    color: "#ef4444",
+    stations: ["CSMT", "Dadar", "Kurla", "Thane"],
     coordinates: [
-      [19.076, 72.8777],
-      [19.087, 72.889],
-      [19.101, 72.899],
+      [18.94, 72.8352],
+      [19.0178, 72.8438],
+      [19.0664, 72.8801],
+      [19.186, 72.9759],
     ],
   },
   {
     routeId: "R2",
-    name: "Harbour Line",
-    color: "#f7b955",
-    stations: ["Market Street", "Harbour Point", "East Terminal"],
+    name: "Western Line",
+    color: "#3b82f6",
+    stations: ["Dadar", "Bandra", "Andheri", "Borivali"],
     coordinates: [
-      [19.019, 72.86],
-      [19.011, 72.861],
-      [18.998, 72.87],
+      [19.0178, 72.8438],
+      [19.0544, 72.8406],
+      [19.1197, 72.8468],
+      [19.2307, 72.8567],
     ],
   },
   {
     routeId: "R3",
-    name: "Airport Express",
-    color: "#b89cff",
-    stations: ["Central Station", "Tech Park", "Airport Road"],
+    name: "Harbour Line",
+    color: "#facc15",
+    stations: ["CSMT", "Kurla", "Vashi", "Panvel"],
     coordinates: [
-      [19.061, 72.879],
-      [19.073, 72.895],
-      [19.09, 72.914],
+      [18.94, 72.8352],
+      [19.0664, 72.8801],
+      [19.0745, 72.9986],
+      [18.9902, 73.1172],
     ],
   },
   {
     routeId: "R4",
-    name: "South Connector",
-    color: "#ff8b76",
-    stations: ["Old Town", "Lakeside", "South Junction"],
+    name: "Trans-Harbour Line",
+    color: "#f97316",
+    stations: ["Thane", "Airoli", "Vashi"],
     coordinates: [
-      [19.048, 72.867],
-      [19.031, 72.874],
-      [19.014, 72.882],
+      [19.186, 72.9759],
+      [19.1513, 72.9932],
+      [19.0745, 72.9986],
     ],
   },
 ];
 
-let datasetName = "MetroMind Demo Network";
+const ROUTE_BASE_DEMAND: Record<string, number> = {
+  R1: 2340,
+  R2: 2280,
+  R3: 1980,
+  R4: 1680,
+};
+
+let datasetName = "MMR_TRANSIT_2026";
 let isDemo = true;
 let rows: TransportRow[];
 
@@ -97,33 +111,49 @@ const standardDeviation = (values: number[]) => {
   );
 };
 
+function commuteMultiplier(hour: number) {
+  if (hour >= 8 && hour <= 11) {
+    return { 8: 2.5, 9: 2.35, 10: 2.05, 11: 1.8 }[hour] ?? 1.8;
+  }
+  if (hour >= 17 && hour <= 20) {
+    return { 17: 1.7, 18: 2.4, 19: 2.25, 20: 1.9 }[hour] ?? 1.7;
+  }
+  if (hour >= 12 && hour <= 16) {
+    return { 12: 0.85, 13: 0.72, 14: 0.64, 15: 0.68, 16: 0.9 }[hour] ?? 0.7;
+  }
+  if (hour >= 23 || hour <= 4) {
+    return hour === 23 || hour === 4 ? 0.2 : 0.1;
+  }
+  return hour === 5 || hour === 21 || hour === 22 ? 0.35 : 1.05;
+}
+
 function createDemoRows(): TransportRow[] {
   const generated: TransportRow[] = [];
   const start = new Date("2026-07-27T00:00:00Z");
   for (let day = 0; day < 28; day += 1) {
     for (const route of ROUTES) {
-      for (let hour = 6; hour <= 21; hour += 1) {
+      for (let hour = 0; hour < 24; hour += 1) {
         const date = new Date(start);
         date.setUTCDate(start.getUTCDate() + day);
         date.setUTCHours(hour);
         const dayOfWeek = date.getUTCDay();
         const weekend = dayOfWeek === 0 || dayOfWeek === 6;
-        const morningPeak = Math.max(0, 1 - Math.abs(hour - 8) / 4);
-        const eveningPeak = Math.max(0, 1 - Math.abs(hour - 18) / 4);
-        const routeFactor = { R1: 1.12, R2: 0.74, R3: 1.28, R4: 0.58 }[route.routeId] ?? 1;
-        const base = 230 + 850 * morningPeak + 640 * eveningPeak;
-        const weekdayFactor = weekend ? 0.64 : 1;
+        const weekdayFactor = weekend ? 0.72 : 1;
         const rainfall = Number((day % 6 === 0 ? 7.2 : (day % 5) * 0.8).toFixed(1));
         const temperature = round(28 + Math.sin(day / 4) * 3 - rainfall * 0.22, 1);
         const event = day === 12 && route.routeId === "R3";
-        const count =
-          base *
-            routeFactor *
-            weekdayFactor *
-            (1 + rainfall * 0.018) *
-            (event ? 1.24 : 1) +
-          Math.sin(day * 1.7 + hour) * 24 +
-          (day % 3) * 8;
+        const rainSuppression = 1 - Math.min(0.18, rainfall * 0.018);
+        const interchangeBoost = ["R1", "R3", "R4"].includes(route.routeId)
+          ? 1 + Math.min(0.12, rainfall * 0.012)
+          : 1;
+        const variance = 1 + Math.sin(day * 1.73 + hour * 0.91 + route.routeId.charCodeAt(1)) * 0.05;
+        const count = ROUTE_BASE_DEMAND[route.routeId] *
+          commuteMultiplier(hour) *
+          weekdayFactor *
+          rainSuppression *
+          interchangeBoost *
+          variance *
+          (event ? 1.18 : 1);
         generated.push({
           timestamp: date.toISOString(),
           routeId: route.routeId,
@@ -209,7 +239,7 @@ export function loadCsv(csv: string) {
 
 export function resetDemo() {
   rows = createDemoRows();
-  datasetName = "MetroMind Demo Network";
+  datasetName = "MMR_TRANSIT_2026";
   isDemo = true;
   return getDataSummary();
 }
@@ -260,14 +290,18 @@ function hourlyAverage(routeId: string, hour: number, source = rows) {
 function modelDemand(routeId: string, conditions: Conditions, model = "Gradient Boosting") {
   const routeAverage = historicalAverage(routeId);
   const hourly = hourlyAverage(routeId, conditions.hour);
-  const weatherFactor = 1 + conditions.rainfall * 0.018;
+  const weatherFactor = 1 - Math.min(0.18, conditions.rainfall * 0.018);
+  const interchangeFactor = ["R1", "R3", "R4"].includes(routeId)
+    ? 1 + Math.min(0.12, conditions.rainfall * 0.012)
+    : 1;
   const temperatureFactor = 1 + Math.max(0, 22 - conditions.temperature) * 0.008;
   const holidayFactor = conditions.isHoliday ? 0.72 : 1;
   const eventFactor = conditions.specialEvent && routeId === "R3" ? 1.24 : conditions.specialEvent ? 1.08 : 1;
-  const seasonalSignal = Math.sin((conditions.hour - 6) / 15 * Math.PI) * routeAverage * 0.025;
-  let estimate = hourly * weatherFactor * temperatureFactor * holidayFactor * eventFactor * conditions.demandMultiplier + seasonalSignal;
+  const variance = 1 + Math.sin(conditions.hour * 0.91 + routeId.charCodeAt(1)) * 0.05;
+  const seasonalSignal = Math.sin((conditions.hour - 6) / 24 * Math.PI) * routeAverage * 0.025;
+  let estimate = hourly * weatherFactor * interchangeFactor * temperatureFactor * holidayFactor * eventFactor * conditions.demandMultiplier * variance + seasonalSignal;
   if (model === "Linear Regression") estimate = routeAverage + (hourly - routeAverage) * 0.9 + (weatherFactor - 1) * routeAverage * 0.8;
-  if (model === "Random Forest") estimate = hourly * weatherFactor * holidayFactor * eventFactor * conditions.demandMultiplier + seasonalSignal * 0.7;
+  if (model === "Random Forest") estimate = hourly * weatherFactor * interchangeFactor * holidayFactor * eventFactor * conditions.demandMultiplier * variance + seasonalSignal * 0.7;
   return Math.max(20, estimate);
 }
 
@@ -396,7 +430,7 @@ export function solveOptimization(predictions: Prediction[], availableBuses: num
     totalBuses: routes.reduce((sum, route) => sum + route.buses, 0),
     totalCapacity: routes.reduce((sum, route) => sum + route.capacity, 0),
     totalDemand: round(routes.reduce((sum, route) => sum + route.predictedDemand, 0)),
-    formulation: "Minimize 3Σ(max(0, demandᵢ − 160bᵢ)) + 0.35Σ(max(0, 160bᵢ − demandᵢ)) + 12Σbᵢ, subject to Σbᵢ ≤ available buses and minᵢ ≤ bᵢ ≤ maxᵢ.",
+    formulation: "Minimize 3Σ(max(0, demandᵢ − 3000bᵢ)) + 0.35Σ(max(0, 3000bᵢ − demandᵢ)) + 12Σbᵢ, subject to Σbᵢ ≤ available train sets and minᵢ ≤ bᵢ ≤ maxᵢ.",
   };
 }
 
@@ -431,8 +465,7 @@ export function dashboard() {
   const highRiskRoutes = routeInsights.filter((route) => route.risk === "HIGH").length;
   const averageRisk = average(routeInsights.map((route) => route.overcrowdingProbability));
   const recommendedBuses = routeInsights.reduce((sum, route) => sum + route.recommendedBuses, 0);
-  const hourly = Array.from({ length: 16 }, (_, index) => {
-    const hour = index + 6;
+  const hourly = Array.from({ length: 24 }, (_, hour) => {
     const demand = average(rows.filter((row) => new Date(row.timestamp).getHours() === hour).map((row) => row.passengerCount));
     return { label: `${hour}:00`, demand: round(demand), baseline: round(demand * 0.92) };
   });
@@ -487,7 +520,7 @@ export function getAnalysis() {
       interpretation: `${strength} ${p >= 0 ? "positive" : "negative"} association in the active dataset.`,
     };
   });
-  const hourlyDemand = Array.from({ length: 16 }, (_, index) => average(rows.filter((row) => new Date(row.timestamp).getHours() === index + 6).map((row) => row.passengerCount)));
+  const hourlyDemand = Array.from({ length: 24 }, (_, hour) => average(rows.filter((row) => new Date(row.timestamp).getHours() === hour).map((row) => row.passengerCount)));
   const spectrum = Array.from({ length: 8 }, (_, index) => {
     const k = index + 1;
     const amplitude = Math.sqrt(
@@ -500,7 +533,7 @@ export function getAnalysis() {
   const pattern = dominantPeriod >= 10 ? "Daily commute rhythm with morning and evening peaks" : "Repeating intraday passenger pulse";
   const patternValues = hourlyDemand.map((value, index) => {
     const harmonic = spectrum.slice(0, 3).reduce((sum, component, componentIndex) => sum + component.amplitude * Math.cos((2 * Math.PI * (componentIndex + 1) * index) / hourlyDemand.length), 0);
-    return { label: `${index + 6}:00`, demand: round(value), pattern: round(average(hourlyDemand) + harmonic) };
+    return { label: `${index}:00`, demand: round(value), pattern: round(average(hourlyDemand) + harmonic) };
   });
   return {
     correlations,
@@ -565,20 +598,48 @@ export function runSimulation(input: {
   };
 }
 
-export function explain(topic: string, evidence: string) {
-  const configured = Boolean(process.env.GEMINI_API_KEY);
-  if (!configured) {
+export async function explain(topic: string, evidence: string) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
     return {
       configured: false,
-      explanation: "Gemini is not configured in this prototype. The evidence above is still fully reproducible from the active dataset and local calculation engine.",
+      explanation: "Gemini is not configured. The evidence above is still fully reproducible from the active dataset and local calculation engine.",
       evidence,
     };
   }
-  return {
-    configured: true,
-    explanation: `Based only on the supplied mathematical evidence: ${topic}. ${evidence}`,
-    evidence,
-  };
+
+  const prompt = `You are an expert transit operations data analyst. Analyze these mathematical signals and provide a concise, executive-level operational review note (3-4 bullet points) explaining what these metrics mean for bus dispatchers and transit management: ${JSON.stringify({ topic, evidence })}`;
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.2, maxOutputTokens: 8192 },
+        }),
+      },
+    );
+    if (!response.ok) {
+      throw new Error(`Gemini request failed with status ${response.status}`);
+    }
+    const payload = await response.json() as {
+      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+    };
+    const narration = payload.candidates?.[0]?.content?.parts
+      ?.map((part) => part.text ?? "")
+      .join("")
+      .trim();
+    if (!narration) throw new Error("Gemini returned an empty explanation.");
+    return { configured: true, explanation: narration, evidence };
+  } catch (error) {
+    return {
+      configured: false,
+      explanation: `Gemini could not be reached, so the local evidence summary remains active. ${error instanceof Error ? error.message : "Unknown provider error."}`,
+      evidence,
+    };
+  }
 }
 
 export { BUS_CAPACITY, TOTAL_BUSES };

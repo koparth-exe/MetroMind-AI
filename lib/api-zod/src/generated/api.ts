@@ -385,3 +385,18 @@ export const ExplainResultsResponse = zod.object({
 })
 
 
+/**
+ * @summary Generate a Gemini operational review note from mathematical evidence
+ */
+export const ExplainInsightsBody = zod.object({
+  "topic": zod.string(),
+  "evidence": zod.string()
+})
+
+export const ExplainInsightsResponse = zod.object({
+  "configured": zod.boolean(),
+  "explanation": zod.string(),
+  "evidence": zod.string()
+})
+
+

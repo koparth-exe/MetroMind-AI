@@ -1,0 +1,22 @@
+Please execute the following comprehensive updates to the MetroMind codebase to prepare it for production. Ensure all existing responsive layouts, sidebar navigation, and FastAPI endpoints remain functional.
+
+**Phase 1: Integrate Gemini AI for the "Insights" Workspace**
+* **Backend Integration:** Set up a backend endpoint (e.g., POST `/api/insights/explain`) that securely reads `GEMINI_API_KEY` from environment variables. Use the official `google-generativeai` SDK (model `gemini-1.5-flash`). The endpoint must accept the current mathematical evidence metrics.
+* **Prompt Template:** "You are an expert transit operations data analyst. Analyze these mathematical signals and provide a concise, executive-level operational review note (3-4 bullet points) explaining what these metrics mean for bus dispatchers and transit management: {evidence_data}"
+* **Frontend UI Action:** Wire the "Explain with AI" button on the Insights page to trigger this endpoint. Add a loading skeleton state while awaiting the response. Render the returned AI narration and update the badge status to `AI GENERATED (Gemini 1.5 Flash)`.
+
+**Phase 2: Mumbai Transit Network & Leaflet.js Integration**
+* **Map Replacement:** Remove the static coordinate grid under "Demonstration transport network" and add an interactive `<div id="map"></div>`. Include Leaflet.js CDN CSS/JS in the head. Initialize the map centered on Mumbai `[19.0760, 72.8777]` (zoom 11) using free OpenStreetMap tiles.
+* **Route Data Update:** Replace placeholder R1-R4 routes in the dataset with real lines—R1: Central Line (Red), R2: Western Line (Blue), R3: Harbour Line (Yellow), R4: Trans-Harbour Line (Orange).
+* **Plot Real Coordinates:** Render polylines and interactive station markers for real geographic locations: CSMT `[18.9400, 72.8352]`, Dadar `[19.0178, 72.8438]`, Kurla `[19.0664, 72.8801]`, Vashi `[19.0745, 72.9986]`, Thane `[19.1860, 72.9759]`, Airoli `[19.1513, 72.9932]`, Panvel `[18.9902, 73.1172]`.
+* **Interactivity:** Clicking a polyline must update the active route selection and dynamically refresh the Route Intelligence side panel. Update the top-right dataset badge to `LIVE_DATASET : MMR_TRANSIT_2026`.
+
+**Phase 3: Terminal-Inspired Dark Mode**
+* **Tailwind & Logic:** Update `tailwind.config.js` with `darkMode: 'class'`. Create a JavaScript script to check `localStorage` or OS preference on load, applying the `dark` class to the `<html>` tag if active.
+* **Toggle UI:** Add a Sun/Moon SVG theme toggle button at the bottom of the left Sidebar Navigation, directly above the "Settings" option.
+* **Aesthetic Styling:** Switch main backgrounds to high-contrast dark colors (`dark:bg-slate-950`), sidebars/cards to lighter darks (`dark:bg-slate-900`), and ensure text remains highly legible (`dark:text-slate-200`). Accent colors should shift to vibrant, terminal-style neon hues.
+
+**Phase 4: Realistic Mumbai Passenger Demand Simulation**
+* **Baseline Capacities:** Set maximum train capacities to 3,000 passengers to simulate a dense crush-load. R1/R2 are High-Volume (70-80% base off-peak). R3 is Medium-High (60-70%). R4 is Medium (50-60%).
+* **Commute Logic (Multipliers):** Morning Peak (08:00-11:00) apply 1.8x-2.5x to trigger "High Risk" exceedance probability. Evening Peak (17:30-20:30) apply 1.7x-2.4x. Off-Peak (12:00-16:00) apply 0.6x-0.9x. Late Night (23:00-04:00) drop to 10-20%.
+* **Variance & Weather:** Inject a randomized +/- 5% variance to all demand. Ensure demand reacts to "Rainfall" (lowers overall volume but spikes crowding risk at major interchanges). Ensure "Overview" and "Prediction" charts dynamically reflect these bi-modal daily distributions.

@@ -272,6 +272,11 @@
   .font-mono-ui { font-family: var(--app-font-mono); }
   .signal-card { background: hsl(var(--card) / .86); border: 1px solid hsl(var(--border)); box-shadow: 0 10px 30px hsl(214 38% 16% / .055); }
   .grid-paper { background-image: linear-gradient(hsl(var(--border) / .38) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border) / .38) 1px, transparent 1px); background-size: 28px 28px; }
+  .mumbai-map { min-height: 470px; width: 100%; background: hsl(var(--muted)); z-index: 0; }
+  .dark .mumbai-map { filter: saturate(.8) brightness(.78) contrast(1.08); }
+  .leaflet-container { font-family: var(--app-font-mono); }
+  .leaflet-control-zoom a, .leaflet-control-attribution { background: hsl(var(--card) / .92) !important; color: hsl(var(--foreground)) !important; border-color: hsl(var(--border)) !important; }
+  .leaflet-control-attribution a { color: hsl(var(--primary)) !important; }
   .animate-rise { animation: rise .5s cubic-bezier(.22,1,.36,1) both; }
   .animate-pulse-line { animation: pulse-line 2s ease-in-out infinite; }
   @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

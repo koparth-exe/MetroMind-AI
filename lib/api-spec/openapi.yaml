@@ -214,6 +214,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Explanation"
+  /insights/explain:
+    post:
+      operationId: explainInsights
+      tags: [ai]
+      summary: Generate a Gemini operational review note from mathematical evidence
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExplanationInput"
+      responses:
+        "200":
+          description: Gemini explanation or explicit local fallback
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Explanation"
 components:
   schemas:
     HealthStatus:

@@ -1081,3 +1081,83 @@ export const useExplainResults = <TError = ErrorType<unknown>,
       return useMutation(getExplainResultsMutationOptions(options));
     }
 
+export const getExplainInsightsUrl = () => {
+
+
+
+
+  return `/api/insights/explain`
+}
+
+/**
+ * @summary Generate a Gemini operational review note from mathematical evidence
+ */
+export const explainInsights = async (explanationInput: ExplanationInput, options?: Parameters<typeof customFetch>[1]): Promise<Explanation> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Array.isArray(h)) return Object.fromEntries(h);
+    return h;
+  };
+return customFetch<Explanation>(getExplainInsightsUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(explanationInput)
+  }
+);}
+
+
+
+
+
+export const getExplainInsightsMutationKey = () => ['explainInsights'] as const;
+
+export const getExplainInsightsMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof explainInsights>>, TError,ExplainInsightsMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof explainInsights>>, TError,ExplainInsightsMutationVariables, TContext> => {
+
+const mutationKey = getExplainInsightsMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof explainInsights>>, ExplainInsightsMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  explainInsights(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ExplainInsightsMutationResult = NonNullable<Awaited<ReturnType<typeof explainInsights>>>
+    export type ExplainInsightsMutationBody = BodyType<ExplanationInput>
+    export type ExplainInsightsMutationError = ErrorType<unknown>
+    export type ExplainInsightsMutationVariables = {data: BodyType<ExplanationInput>}
+
+    /**
+ * @summary Generate a Gemini operational review note from mathematical evidence
+ */
+export const useExplainInsights = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof explainInsights>>, TError,ExplainInsightsMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof explainInsights>>,
+        TError,
+        ExplainInsightsMutationVariables,
+        TContext
+      > => {
+      return useMutation(getExplainInsightsMutationOptions(options));
+    }
+

@@ -1,7 +1,7 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useHealthCheck } from '@workspace/api-client-react';
-import { Activity, BarChart3, BrainCircuit, BusFront, ChevronRight, CircleHelp, Database, Gauge, GitBranch, Map, Menu, Network, Settings, SlidersHorizontal, Sparkles, Target } from 'lucide-react';
+import { Activity, BarChart3, BrainCircuit, BusFront, ChevronRight, CircleHelp, Database, Gauge, GitBranch, Map, Menu, Moon, Network, Settings, SlidersHorizontal, Sparkles, Sun, Target } from 'lucide-react';
 
 const nav = [
   { href: '/', label: 'Overview', icon: Gauge },
@@ -20,8 +20,16 @@ const nav = [
 export function MetroShell({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = window.localStorage.getItem('metromind-theme');
+    return saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
   const health = useHealthCheck();
   const current = nav.find((item) => item.href === location) ?? nav[0];
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', darkMode);
+    window.localStorage.setItem('metromind-theme', darkMode ? 'dark' : 'light');
+  }, [darkMode]);
   const Sidebar = (
     <aside className="flex h-full w-[248px] shrink-0 flex-col bg-sidebar text-sidebar-foreground">
       <div className="border-b border-sidebar-border px-5 py-5">
@@ -53,6 +61,10 @@ export function MetroShell({ children }: { children: ReactNode }) {
       </div>
       <div className="mt-auto px-3 pb-5">
         <div className="mb-3 border-t border-sidebar-border pt-4">
+          <button type="button" onClick={() => setDarkMode((value) => !value)} data-testid="button-toggle-theme" aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'} className="mb-1 flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-[12px] font-semibold text-sidebar-foreground/62 hover:bg-sidebar-accent/65 hover:text-sidebar-foreground">
+            {darkMode ? <Sun size={16} className="text-sidebar-primary" /> : <Moon size={16} className="text-sidebar-foreground/45" />}
+            {darkMode ? 'Light mode' : 'Dark mode'}
+          </button>
           <Link href="/settings" data-testid="link-nav-settings" className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-[12px] font-semibold transition-colors ${location === '/settings' ? 'bg-sidebar-accent' : 'text-sidebar-foreground/62 hover:bg-sidebar-accent/65 hover:text-sidebar-foreground'}`}>
             <Settings size={16} className="text-sidebar-foreground/45" /> Settings
           </Link>
@@ -90,7 +102,7 @@ export function MetroShell({ children }: { children: ReactNode }) {
           <div className="flex items-center gap-4">
             <div className="hidden items-center gap-2 md:flex">
               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              <span className="font-mono-ui text-[10px] text-muted-foreground">LIVE DATASET · DEMO_2024_Q2</span>
+               <span className="font-mono-ui text-[10px] text-muted-foreground">LIVE_DATASET : MMR_TRANSIT_2026</span>
             </div>
             <div className="grid h-9 w-9 place-items-center rounded-full border border-border bg-card font-display text-sm font-bold text-primary" data-testid="avatar-current-user">AM</div>
           </div>

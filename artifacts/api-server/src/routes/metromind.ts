@@ -75,13 +75,22 @@ router.post("/simulation", (req, res) => {
   }
   res.json(runSimulation(parsed.data));
 });
-router.post("/ai/explain", (req, res) => {
+router.post("/ai/explain", async (req, res) => {
   const parsed = ExplainResultsBody.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
     return;
   }
-  res.json(explain(parsed.data.topic, parsed.data.evidence));
+  res.json(await explain(parsed.data.topic, parsed.data.evidence));
+});
+
+router.post("/insights/explain", async (req, res) => {
+  const parsed = ExplainResultsBody.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+  res.json(await explain(parsed.data.topic, parsed.data.evidence));
 });
 
 export default router;
