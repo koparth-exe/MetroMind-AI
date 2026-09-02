@@ -283,6 +283,73 @@
   @keyframes pulse-line { 0%,100% { opacity: .42; } 50% { opacity: 1; } }
 }
 
+@layer components {
+  .transport-mode-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.2rem;
+    border: 1px solid hsl(var(--border));
+    border-radius: 999px;
+    background: hsl(var(--card) / 0.74);
+    box-shadow: 0 4px 14px hsl(214 38% 16% / 0.06);
+  }
+
+  .transport-mode-option {
+    display: inline-flex;
+    min-height: 2rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    padding: 0.35rem 0.65rem;
+    color: hsl(var(--muted-foreground));
+    font-family: var(--app-font-mono);
+    font-size: 0.58rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    text-transform: uppercase;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+  }
+
+  .transport-mode-option:hover {
+    color: hsl(var(--foreground));
+  }
+
+  .transport-mode-option:active {
+    transform: scale(0.97);
+  }
+
+  .transport-mode-option[data-active='true'] {
+    border-color: hsl(var(--primary) / 0.38);
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    box-shadow: 0 2px 7px hsl(var(--primary) / 0.2);
+  }
+
+  .transport-mode-option:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  @media (max-width: 639px) {
+    .transport-mode-control {
+      gap: 0.1rem;
+    }
+
+    .transport-mode-option {
+      min-width: 2.1rem;
+      padding: 0.35rem 0.5rem;
+    }
+
+    .transport-mode-option-label {
+      display: none;
+    }
+  }
+}
+
 /**
  * Using the elevate system.
  * Automatic contrast adjustment.

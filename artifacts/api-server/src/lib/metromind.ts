@@ -20,6 +20,8 @@ type Conditions = {
   demandMultiplier: number;
 };
 
+export type TransportMode = "railway" | "bus";
+
 type Prediction = {
   routeId: string;
   predictedDemand: number;
@@ -32,11 +34,17 @@ type Prediction = {
 
 const TRAIN_CAPACITY = 3000;
 const TOTAL_TRAINS = 4;
-// Keep the existing API field names for backwards compatibility while the
-// product models train sets as the allocatable fleet unit.
-const BUS_CAPACITY = TRAIN_CAPACITY;
-const TOTAL_BUSES = TOTAL_TRAINS;
-const ROUTES = [
+const BUS_CAPACITY = 70;
+const TOTAL_BUSES = 4;
+type RouteDefinition = {
+  routeId: string;
+  name: string;
+  color: string;
+  stations: string[];
+  coordinates: number[][];
+};
+
+const RAILWAY_ROUTES: RouteDefinition[] = [
   {
     routeId: "R1",
     name: "Central Line",
@@ -86,6 +94,62 @@ const ROUTES = [
   },
 ];
 
+const BUS_ROUTES: RouteDefinition[] = [
+  {
+    routeId: "B1",
+    name: "Vashi–Dadar",
+    color: "#a855f7",
+    stations: ["Vashi", "Sion", "Kurla", "Dadar"],
+    coordinates: [
+      [19.0745, 72.9986],
+      [19.046, 72.862],
+      [19.0664, 72.8801],
+      [19.0178, 72.8438],
+    ],
+  },
+  {
+    routeId: "B2",
+    name: "Panvel–Thane",
+    color: "#14b8a6",
+    stations: ["Panvel", "Kharghar", "Vashi", "Airoli", "Thane"],
+    coordinates: [
+      [18.9902, 73.1172],
+      [19.0476, 73.0699],
+      [19.0745, 72.9986],
+      [19.1513, 72.9932],
+      [19.186, 72.9759],
+    ],
+  },
+  {
+    routeId: "B3",
+    name: "Kharghar–CBD Belapur",
+    color: "#f59e0b",
+    stations: ["Kharghar", "Belapur CBD", "Nerul"],
+    coordinates: [
+      [19.0476, 73.0699],
+      [19.0176, 73.0397],
+      [19.033, 73.0169],
+    ],
+  },
+  {
+    routeId: "B4",
+    name: "Airoli–Vashi",
+    color: "#ec4899",
+    stations: ["Airoli", "Ghansoli", "Koparkhairane", "Vashi"],
+    coordinates: [
+      [19.1513, 72.9932],
+      [19.126, 72.998],
+      [19.102, 72.997],
+      [19.0745, 72.9986],
+    ],
+  },
+];
+
+const ROUTES_BY_MODE: Record<TransportMode, RouteDefinition[]> = {
+  railway: RAILWAY_ROUTES,
+  bus: BUS_ROUTES,
+};
+
 const ROUTE_BASE_DEMAND: Record<string, number> = {
   R1: 2340,
   R2: 2280,
@@ -93,9 +157,37 @@ const ROUTE_BASE_DEMAND: Record<string, number> = {
   R4: 1680,
 };
 
+const BUS_ROUTE_BASE_DEMAND: Record<string, number> = {
+  B1: 30,
+  B2: 26,
+  B3: 22,
+  B4: 27,
+};
+
+const BASE_DEMAND_BY_MODE: Record<TransportMode, Record<string, number>> = {
+  railway: ROUTE_BASE_DEMAND,
+  bus: BUS_ROUTE_BASE_DEMAND,
+};
+
 let datasetName = "MMR_TRANSIT_2026";
 let isDemo = true;
-let rows: TransportRow[];
+let rowsByMode: Record<TransportMode, TransportRow[]>;
+
+function routesFor(mode: TransportMode = "railway") {
+  return ROUTES_BY_MODE[mode];
+}
+
+function capacityFor(mode: TransportMode = "railway") {
+  return mode === "bus" ? BUS_CAPACITY : TRAIN_CAPACITY;
+}
+
+function fleetFor(mode: TransportMode = "railway") {
+  return mode === "bus" ? TOTAL_BUSES : TOTAL_TRAINS;
+}
+
+function activeRows(mode: TransportMode = "railway") {
+  return rowsByMode[mode];
+}
 
 const round = (value: number, digits = 1) =>
   Number(value.toFixed(digits));
@@ -111,7 +203,20 @@ const standardDeviation = (values: number[]) => {
   );
 };
 
-function commuteMultiplier(hour: number) {
+function commuteMultiplier(hour: number, mode: TransportMode = "railway") {
+  if (mode === "bus") {
+    if (hour >= 8 && hour <= 11) {
+      return { 8: 1.8, 9: 1.7, 10: 1.5, 11: 1.3 }[hour] ?? 1.3;
+    }
+    if (hour >= 17 && hour <= 20) {
+      return { 17: 1.45, 18: 1.9, 19: 1.75, 20: 1.5 }[hour] ?? 1.4;
+    }
+    if (hour >= 12 && hour <= 16) {
+      return { 12: 0.78, 13: 0.7, 14: 0.64, 15: 0.68, 16: 0.84 }[hour] ?? 0.7;
+    }
+    if (hour >= 23 || hour <= 4) return hour === 23 || hour === 4 ? 0.18 : 0.08;
+    return hour === 5 || hour === 21 || hour === 22 ? 0.3 : 0.9;
+  }
   if (hour >= 8 && hour <= 11) {
     return { 8: 2.5, 9: 2.35, 10: 2.05, 11: 1.8 }[hour] ?? 1.8;
   }
@@ -127,11 +232,11 @@ function commuteMultiplier(hour: number) {
   return hour === 5 || hour === 21 || hour === 22 ? 0.35 : 1.05;
 }
 
-function createDemoRows(): TransportRow[] {
+function createDemoRows(mode: TransportMode = "railway"): TransportRow[] {
   const generated: TransportRow[] = [];
   const start = new Date("2026-07-27T00:00:00Z");
   for (let day = 0; day < 28; day += 1) {
-    for (const route of ROUTES) {
+    for (const route of routesFor(mode)) {
       for (let hour = 0; hour < 24; hour += 1) {
         const date = new Date(start);
         date.setUTCDate(start.getUTCDate() + day);
@@ -141,14 +246,14 @@ function createDemoRows(): TransportRow[] {
         const weekdayFactor = weekend ? 0.72 : 1;
         const rainfall = Number((day % 6 === 0 ? 7.2 : (day % 5) * 0.8).toFixed(1));
         const temperature = round(28 + Math.sin(day / 4) * 3 - rainfall * 0.22, 1);
-        const event = day === 12 && route.routeId === "R3";
+        const event = day === 12 && route.routeId === (mode === "bus" ? "B2" : "R3");
         const rainSuppression = 1 - Math.min(0.18, rainfall * 0.018);
-        const interchangeBoost = ["R1", "R3", "R4"].includes(route.routeId)
+        const interchangeBoost = (mode === "bus" ? ["B1", "B2", "B4"] : ["R1", "R3", "R4"]).includes(route.routeId)
           ? 1 + Math.min(0.12, rainfall * 0.012)
           : 1;
         const variance = 1 + Math.sin(day * 1.73 + hour * 0.91 + route.routeId.charCodeAt(1)) * 0.05;
-        const count = ROUTE_BASE_DEMAND[route.routeId] *
-          commuteMultiplier(hour) *
+        const count = BASE_DEMAND_BY_MODE[mode][route.routeId] *
+          commuteMultiplier(hour, mode) *
           weekdayFactor *
           rainSuppression *
           interchangeBoost *
@@ -172,7 +277,10 @@ function createDemoRows(): TransportRow[] {
   return generated;
 }
 
-rows = createDemoRows();
+rowsByMode = {
+  railway: createDemoRows("railway"),
+  bus: createDemoRows("bus"),
+};
 
 function csvLine(line: string): string[] {
   const cells: string[] = [];
@@ -231,28 +339,32 @@ export function loadCsv(csv: string) {
     });
   }
   if (parsed.length < 2) throw new Error("No valid transport records were found.");
-  rows = parsed;
+  rowsByMode.railway = parsed;
   isDemo = false;
   datasetName = "Uploaded transport dataset";
-  return getDataSummary(invalidValues, missingValues);
+  return getDataSummary("railway", invalidValues, missingValues);
 }
 
 export function resetDemo() {
-  rows = createDemoRows();
+  rowsByMode = {
+    railway: createDemoRows("railway"),
+    bus: createDemoRows("bus"),
+  };
   datasetName = "MMR_TRANSIT_2026";
   isDemo = true;
-  return getDataSummary();
+  return getDataSummary("railway");
 }
 
-export function getDataSummary(extraInvalid = 0, extraMissing = 0) {
-  const counts = rows.map((row) => row.passengerCount);
-  const dates = rows.map((row) => row.timestamp).sort();
-  const routes = new Set(rows.map((row) => row.routeId));
-  const stations = new Set(rows.map((row) => row.stationId));
+export function getDataSummary(mode: TransportMode = "railway", extraInvalid = 0, extraMissing = 0) {
+  const source = activeRows(mode);
+  const counts = source.map((row) => row.passengerCount);
+  const dates = source.map((row) => row.timestamp).sort();
+  const routes = new Set(source.map((row) => row.routeId));
+  const stations = new Set(source.map((row) => row.stationId));
   return {
     datasetName,
     isDemo,
-    records: rows.length,
+    records: source.length,
     routes: routes.size,
     stations: stations.size,
     missingValues: extraMissing,
@@ -274,29 +386,30 @@ function normalCdf(value: number) {
   return 0.5 * (1 + sign * erf);
 }
 
-function routeRows(routeId: string) {
-  return rows.filter((row) => row.routeId === routeId);
+function routeRows(routeId: string, mode: TransportMode = "railway") {
+  return activeRows(mode).filter((row) => row.routeId === routeId);
 }
 
-function historicalAverage(routeId: string) {
-  return average(routeRows(routeId).map((row) => row.passengerCount));
+function historicalAverage(routeId: string, mode: TransportMode = "railway") {
+  return average(routeRows(routeId, mode).map((row) => row.passengerCount));
 }
 
-function hourlyAverage(routeId: string, hour: number, source = rows) {
+function hourlyAverage(routeId: string, hour: number, mode: TransportMode = "railway", source = activeRows(mode)) {
   const matches = source.filter((row) => row.routeId === routeId && new Date(row.timestamp).getHours() === hour);
-  return average(matches.map((row) => row.passengerCount)) || historicalAverage(routeId);
+  return average(matches.map((row) => row.passengerCount)) || historicalAverage(routeId, mode);
 }
 
-function modelDemand(routeId: string, conditions: Conditions, model = "Gradient Boosting") {
-  const routeAverage = historicalAverage(routeId);
-  const hourly = hourlyAverage(routeId, conditions.hour);
+function modelDemand(routeId: string, conditions: Conditions, model = "Gradient Boosting", mode: TransportMode = "railway") {
+  const routeAverage = historicalAverage(routeId, mode);
+  const hourly = hourlyAverage(routeId, conditions.hour, mode);
   const weatherFactor = 1 - Math.min(0.18, conditions.rainfall * 0.018);
-  const interchangeFactor = ["R1", "R3", "R4"].includes(routeId)
+  const interchangeFactor = (mode === "bus" ? ["B1", "B2", "B4"] : ["R1", "R3", "R4"]).includes(routeId)
     ? 1 + Math.min(0.12, conditions.rainfall * 0.012)
     : 1;
   const temperatureFactor = 1 + Math.max(0, 22 - conditions.temperature) * 0.008;
   const holidayFactor = conditions.isHoliday ? 0.72 : 1;
-  const eventFactor = conditions.specialEvent && routeId === "R3" ? 1.24 : conditions.specialEvent ? 1.08 : 1;
+  const eventRoute = mode === "bus" ? "B2" : "R3";
+  const eventFactor = conditions.specialEvent && routeId === eventRoute ? 1.24 : conditions.specialEvent ? 1.08 : 1;
   const variance = 1 + Math.sin(conditions.hour * 0.91 + routeId.charCodeAt(1)) * 0.05;
   const seasonalSignal = Math.sin((conditions.hour - 6) / 24 * Math.PI) * routeAverage * 0.025;
   let estimate = hourly * weatherFactor * interchangeFactor * temperatureFactor * holidayFactor * eventFactor * conditions.demandMultiplier * variance + seasonalSignal;
@@ -305,10 +418,11 @@ function modelDemand(routeId: string, conditions: Conditions, model = "Gradient 
   return Math.max(20, estimate);
 }
 
-function residuals(model: string) {
-  const cutoff = Math.max(2, Math.floor(rows.length * 0.8));
-  const train = rows.slice(0, cutoff);
-  const test = rows.slice(cutoff);
+function residuals(model: string, mode: TransportMode = "railway") {
+  const source = activeRows(mode);
+  const cutoff = Math.max(2, Math.floor(source.length * 0.8));
+  const train = source.slice(0, cutoff);
+  const test = source.slice(cutoff);
   const predictions = test.map((row) => modelDemand(row.routeId, {
     hour: new Date(row.timestamp).getHours(),
     rainfall: row.rainfall,
@@ -316,7 +430,7 @@ function residuals(model: string) {
     isHoliday: row.isHoliday,
     specialEvent: row.specialEvent,
     demandMultiplier: 1,
-  }, model));
+  }, model, mode));
   const actual = test.map((row) => row.passengerCount);
   const errors = actual.map((value, index) => value - predictions[index]);
   const mae = average(errors.map((error) => Math.abs(error)));
@@ -327,9 +441,9 @@ function residuals(model: string) {
   return { mae: round(mae), rmse: round(rmse), r2: round(clamp(1 - ssResidual / Math.max(1, ssTotal), -1, 1), 3), errors, trainLength: train.length };
 }
 
-export function compareModels() {
+export function compareModels(mode: TransportMode = "railway") {
   const names = ["Linear Regression", "Random Forest", "Gradient Boosting"];
-  const metrics = names.map((model) => ({ model, ...residuals(model) }));
+  const metrics = names.map((model) => ({ model, ...residuals(model, mode) }));
   const best = metrics.reduce((winner, metric) => metric.rmse < winner.rmse ? metric : winner, metrics[0]);
   return {
     metrics: metrics.map(({ model, mae, rmse, r2 }) => ({ model, mae, rmse, r2, isBest: model === best.model })),
@@ -338,15 +452,15 @@ export function compareModels() {
   };
 }
 
-export function predict(conditions: Conditions, selectedModel?: string) {
-  const comparison = compareModels();
+export function predict(conditions: Conditions, selectedModel?: string, mode: TransportMode = "railway") {
+  const comparison = compareModels(mode);
   const model = selectedModel && comparison.metrics.some((metric) => metric.model === selectedModel)
     ? selectedModel
     : comparison.selectedModel;
-  const error = residuals(model);
-  const predictions = ROUTES.map((route) => {
-    const predictedDemand = modelDemand(route.routeId, conditions, model);
-    const historical = historicalAverage(route.routeId);
+  const error = residuals(model, mode);
+  const predictions = routesFor(mode).map((route) => {
+    const predictedDemand = modelDemand(route.routeId, conditions, model, mode);
+    const historical = historicalAverage(route.routeId, mode);
     return {
       routeId: route.routeId,
       predictedDemand: round(predictedDemand),
@@ -424,24 +538,27 @@ export function solveOptimization(predictions: Prediction[], availableBuses: num
     };
   });
   const objectiveValue = routes.reduce((sum, route) => sum + route.overcrowding * 3 + route.unusedCapacity * 0.35 + route.buses * 12, 0);
+  const unitLabel = busCapacity === BUS_CAPACITY ? "buses" : "train sets";
   return {
     routes,
     objectiveValue: round(objectiveValue),
     totalBuses: routes.reduce((sum, route) => sum + route.buses, 0),
     totalCapacity: routes.reduce((sum, route) => sum + route.capacity, 0),
     totalDemand: round(routes.reduce((sum, route) => sum + route.predictedDemand, 0)),
-    formulation: "Minimize 3Σ(max(0, demandᵢ − 3000bᵢ)) + 0.35Σ(max(0, 3000bᵢ − demandᵢ)) + 12Σbᵢ, subject to Σbᵢ ≤ available train sets and minᵢ ≤ bᵢ ≤ maxᵢ.",
+    formulation: `Minimize 3Σ(max(0, demandᵢ − ${busCapacity}bᵢ)) + 0.35Σ(max(0, ${busCapacity}bᵢ − demandᵢ)) + 12Σbᵢ, subject to Σbᵢ ≤ available ${unitLabel} and minᵢ ≤ bᵢ ≤ maxᵢ.`,
   };
 }
 
-export function insights(predictions: Prediction[], availableBuses = TOTAL_BUSES) {
-  const optimization = solveOptimization(predictions, availableBuses, BUS_CAPACITY, 2, 14);
+export function insights(predictions: Prediction[], availableBuses = TOTAL_BUSES, mode: TransportMode = "railway") {
+  const capacity = capacityFor(mode);
+  const optimization = solveOptimization(predictions, availableBuses, capacity, mode === "bus" ? 1 : 2, mode === "bus" ? 12 : 14);
   const error = Math.max(...predictions.map((prediction) => prediction.upperBound - prediction.predictedDemand), 40);
-  const baselineBuses = Math.max(1, Math.floor(availableBuses / ROUTES.length));
-  return ROUTES.map((route, index) => {
+  const routeDefinitions = routesFor(mode);
+  const baselineBuses = Math.max(1, Math.floor(availableBuses / routeDefinitions.length));
+  return routeDefinitions.map((route, index) => {
     const prediction = predictions[index];
     const optimized = optimization.routes[index];
-    const baselineCapacity = baselineBuses * BUS_CAPACITY;
+    const baselineCapacity = baselineBuses * capacity;
     const risk = riskFor(prediction, baselineCapacity, error);
     return {
       ...route,
@@ -457,23 +574,23 @@ export function insights(predictions: Prediction[], availableBuses = TOTAL_BUSES
   });
 }
 
-export function dashboard() {
-  const prediction = predict({ hour: 8, rainfall: 2.4, temperature: 25, isHoliday: false, specialEvent: false, demandMultiplier: 1 });
-  const routeInsights = insights(prediction.routes);
-  const analysis = getAnalysis();
+export function dashboard(mode: TransportMode = "railway") {
+  const prediction = predict({ hour: 8, rainfall: 2.4, temperature: 25, isHoliday: false, specialEvent: false, demandMultiplier: 1 }, undefined, mode);
+  const routeInsights = insights(prediction.routes, fleetFor(mode), mode);
+  const analysis = getAnalysis(mode);
   const totalDemand = routeInsights.reduce((sum, route) => sum + route.predictedDemand, 0);
   const highRiskRoutes = routeInsights.filter((route) => route.risk === "HIGH").length;
   const averageRisk = average(routeInsights.map((route) => route.overcrowdingProbability));
   const recommendedBuses = routeInsights.reduce((sum, route) => sum + route.recommendedBuses, 0);
   const hourly = Array.from({ length: 24 }, (_, hour) => {
-    const demand = average(rows.filter((row) => new Date(row.timestamp).getHours() === hour).map((row) => row.passengerCount));
+    const demand = average(activeRows(mode).filter((row) => new Date(row.timestamp).getHours() === hour).map((row) => row.passengerCount));
     return { label: `${hour}:00`, demand: round(demand), baseline: round(demand * 0.92) };
   });
   return {
     totalPredictedDemand: round(totalDemand),
     highRiskRoutes,
     averageRisk: round(averageRisk, 1),
-    availableBuses: TOTAL_BUSES,
+    availableBuses: fleetFor(mode),
     totalRequiredCapacity: round(totalDemand),
     recommendedAdditionalBuses: Math.max(0, recommendedBuses - TOTAL_BUSES),
     routes: routeInsights,
@@ -499,13 +616,14 @@ function rank(values: number[]) {
   return [...values].map((value) => values.filter((candidate) => candidate < value).length + 1);
 }
 
-export function getAnalysis() {
-  const demand = rows.map((row) => row.passengerCount);
+export function getAnalysis(mode: TransportMode = "railway") {
+  const source = activeRows(mode);
+  const demand = source.map((row) => row.passengerCount);
   const variables = [
-    ["Rainfall", rows.map((row) => row.rainfall)],
-    ["Temperature", rows.map((row) => row.temperature)],
-    ["Time of day", rows.map((row) => new Date(row.timestamp).getHours())],
-    ["Weekday signal", rows.map((row) => row.isWeekend ? 0 : 1)],
+    ["Rainfall", source.map((row) => row.rainfall)],
+    ["Temperature", source.map((row) => row.temperature)],
+    ["Time of day", source.map((row) => new Date(row.timestamp).getHours())],
+    ["Weekday signal", source.map((row) => row.isWeekend ? 0 : 1)],
   ];
   const correlations = variables.map(([variable, values]) => {
     const numericValues = values as number[];
@@ -520,7 +638,7 @@ export function getAnalysis() {
       interpretation: `${strength} ${p >= 0 ? "positive" : "negative"} association in the active dataset.`,
     };
   });
-  const hourlyDemand = Array.from({ length: 24 }, (_, hour) => average(rows.filter((row) => new Date(row.timestamp).getHours() === hour).map((row) => row.passengerCount)));
+  const hourlyDemand = Array.from({ length: 24 }, (_, hour) => average(source.filter((row) => new Date(row.timestamp).getHours() === hour).map((row) => row.passengerCount)));
   const spectrum = Array.from({ length: 8 }, (_, index) => {
     const k = index + 1;
     const amplitude = Math.sqrt(
@@ -571,14 +689,19 @@ export function runSimulation(input: {
   demandMultiplier: number;
   unavailableRoute?: string;
   model?: string;
+  mode?: TransportMode;
 }) {
-  const baselinePrediction = predict({ hour: 8, rainfall: 1, temperature: 25, isHoliday: false, specialEvent: false, demandMultiplier: 1 }, input.model);
-  const scenarioPrediction = predict({ hour: 8, rainfall: input.rainfall, temperature: input.temperature, isHoliday: input.isHoliday, specialEvent: input.specialEvent, demandMultiplier: input.demandMultiplier }, input.model);
-  const baselineOptimization = solveOptimization(baselinePrediction.routes, TOTAL_BUSES, BUS_CAPACITY, 2, 14);
-  const scenarioBuses = Math.max(4, input.availableBuses - (input.unavailableRoute ? 2 : 0));
-  const scenarioOptimization = solveOptimization(scenarioPrediction.routes, scenarioBuses, BUS_CAPACITY, 2, 14);
-  const baseInsights = insights(baselinePrediction.routes, TOTAL_BUSES);
-  const scenarioInsights = insights(scenarioPrediction.routes, scenarioBuses);
+  const mode = input.mode ?? "railway";
+  const capacity = capacityFor(mode);
+  const fleet = fleetFor(mode);
+  const minFleet = mode === "bus" ? 1 : 2;
+  const baselinePrediction = predict({ hour: 8, rainfall: 1, temperature: 25, isHoliday: false, specialEvent: false, demandMultiplier: 1 }, input.model, mode);
+  const scenarioPrediction = predict({ hour: 8, rainfall: input.rainfall, temperature: input.temperature, isHoliday: input.isHoliday, specialEvent: input.specialEvent, demandMultiplier: input.demandMultiplier }, input.model, mode);
+  const baselineOptimization = solveOptimization(baselinePrediction.routes, fleet, capacity, minFleet, mode === "bus" ? 12 : 14);
+  const scenarioBuses = Math.max(minFleet * 4, input.availableBuses - (input.unavailableRoute ? 1 : 0));
+  const scenarioOptimization = solveOptimization(scenarioPrediction.routes, scenarioBuses, capacity, minFleet, mode === "bus" ? 12 : 14);
+  const baseInsights = insights(baselinePrediction.routes, fleet, mode);
+  const scenarioInsights = insights(scenarioPrediction.routes, scenarioBuses, mode);
   const routeData = scenarioInsights.map((route, index) => ({ ...route, baselineBuses: baseInsights[index].recommendedBuses }));
   return {
     baseline: {

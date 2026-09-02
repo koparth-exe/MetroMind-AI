@@ -1,7 +1,7 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useHealthCheck } from '@workspace/api-client-react';
-import { Activity, BarChart3, BrainCircuit, BusFront, ChevronRight, CircleHelp, Database, Gauge, GitBranch, Map, Menu, Moon, Network, Settings, SlidersHorizontal, Sparkles, Sun, Target } from 'lucide-react';
+import { Activity, BarChart3, BrainCircuit, BusFront, ChevronRight, CircleHelp, Database, Gauge, GitBranch, Map, Menu, Moon, Network, Settings, SlidersHorizontal, Sparkles, Sun, Target, TrainFront } from 'lucide-react';
 
 const nav = [
   { href: '/', label: 'Overview', icon: Gauge },
@@ -17,7 +17,100 @@ const nav = [
   { href: '/insights', label: 'Insights', icon: Sparkles },
 ];
 
+export type TransportMode = 'railway' | 'bus';
+
+export type TransportModeContextValue = {
+  transportMode: TransportMode;
+  setTransportMode: (mode: TransportMode) => void;
+};
+
+export const TransportModeContext = createContext<TransportModeContextValue | null>(null);
+
+const TRANSPORT_MODE_STORAGE_KEY = 'metromind-transport-mode';
+
+function isTransportMode(value: string | null): value is TransportMode {
+  return value === 'railway' || value === 'bus';
+}
+
+function TransportModeProvider({ children }: { children: ReactNode }) {
+  const [transportMode, setTransportModeState] = useState<TransportMode>(() => {
+    if (typeof window === 'undefined') return 'railway';
+    const saved = window.localStorage.getItem(TRANSPORT_MODE_STORAGE_KEY);
+    return isTransportMode(saved) ? saved : 'railway';
+  });
+
+  const setTransportMode = useCallback((mode: TransportMode) => {
+    setTransportModeState(mode);
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(TRANSPORT_MODE_STORAGE_KEY, transportMode);
+  }, [transportMode]);
+
+  useEffect(() => {
+    const handleStorage = (event: StorageEvent) => {
+      if (event.key === TRANSPORT_MODE_STORAGE_KEY && isTransportMode(event.newValue)) {
+        setTransportModeState(event.newValue);
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
+  const value = useMemo(() => ({ transportMode, setTransportMode }), [transportMode, setTransportMode]);
+  return <TransportModeContext.Provider value={value}>{children}</TransportModeContext.Provider>;
+}
+
+export function useTransportMode(): TransportModeContextValue {
+  const context = useContext(TransportModeContext);
+  if (!context) {
+    throw new Error('useTransportMode must be used within MetroShell');
+  }
+  return context;
+}
+
+function TransportModeControl() {
+  const { transportMode, setTransportMode } = useTransportMode();
+  const options: Array<{ mode: TransportMode; label: string; shortLabel: string; Icon: typeof TrainFront }> = [
+    { mode: 'railway', label: 'Railway Network', shortLabel: 'Railway', Icon: TrainFront },
+    { mode: 'bus', label: 'Bus Network', shortLabel: 'Bus', Icon: BusFront },
+  ];
+
+  return (
+    <div className="transport-mode-control" role="group" aria-label="Transport mode" data-testid="control-transport-mode">
+      <span className="sr-only">Choose transport network</span>
+      {options.map(({ mode, label, shortLabel, Icon }) => {
+        const active = transportMode === mode;
+        return (
+          <button
+            key={mode}
+            type="button"
+            onClick={() => setTransportMode(mode)}
+            className="transport-mode-option"
+            data-active={active}
+            aria-pressed={active}
+            aria-label={label}
+            data-testid={`button-transport-${mode}`}
+            title={label}
+          >
+            <Icon size={14} strokeWidth={2.1} aria-hidden="true" />
+            <span className="transport-mode-option-label">{shortLabel}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
 export function MetroShell({ children }: { children: ReactNode }) {
+  return (
+    <TransportModeProvider>
+      <MetroShellFrame>{children}</MetroShellFrame>
+    </TransportModeProvider>
+  );
+}
+
+function MetroShellFrame({ children }: { children: ReactNode }) {
   const [location] = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(() => {
@@ -99,7 +192,8 @@ export function MetroShell({ children }: { children: ReactNode }) {
               <h1 className="mt-1 font-display text-xl font-bold tracking-tight text-foreground">{current.label}</h1>
             </div>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <TransportModeControl />
             <div className="hidden items-center gap-2 md:flex">
               <span className="h-1.5 w-1.5 rounded-full bg-primary" />
                <span className="font-mono-ui text-[10px] text-muted-foreground">LIVE_DATASET : MMR_TRANSIT_2026</span>
