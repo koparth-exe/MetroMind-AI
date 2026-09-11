@@ -1,0 +1,612 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: MetroMind AI public transport demand prediction and resource optimization API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+  - name: dashboard
+  - name: data
+  - name: analysis
+  - name: prediction
+  - name: risk
+  - name: optimization
+  - name: simulation
+  - name: routes
+  - name: ai
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /data/dashboard/{mode}:
+    get:
+      operationId: getDashboard
+      tags: [dashboard]
+      summary: Get the complete current decision-support summary for a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dashboard"
+  /data/summary/{mode}:
+    get:
+      operationId: getDataSummary
+      tags: [data]
+      summary: Get the active dataset quality summary for a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
+      responses:
+        "200":
+          description: Dataset summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataSummary"
+  /data/demo/{mode}:
+    post:
+      operationId: loadDemoDataset
+      tags: [data]
+      summary: Reset and load the demonstration dataset for a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
+      responses:
+        "200":
+          description: Loaded dataset summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataSummary"
+  /data/upload/{mode}:
+    post:
+      operationId: uploadDataset
+      tags: [data]
+      summary: Upload a CSV dataset for a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadDatasetInput"
+      responses:
+        "200":
+          description: Uploaded dataset summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DataSummary"
+        "400":
+          description: Invalid CSV
+  /math/analysis/{mode}:
+    get:
+      operationId: getAnalysis
+      tags: [analysis]
+      summary: Get correlation, regression, and Fourier analysis for a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
+      responses:
+        "200":
+          description: Mathematical analysis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Analysis"
+  /math/predict/{mode}:
+    post:
+      operationId: predictDemand
+      tags: [prediction]
+      summary: Predict demand for a planning scenario on a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PredictionInput"
+      responses:
+        "200":
+          description: Route predictions and model metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PredictionResult"
+  /math/models-summary/{mode}:
+    get:
+      operationId: compareModels
+      tags: [prediction]
+      summary: Compare local ML models on a time-ordered holdout for a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
+      responses:
+        "200":
+          description: Model comparison
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModelComparison"
+  /risk/{mode}/calculate:
+    post:
+      operationId: calculateRisk
+      tags: [risk]
+      summary: Calculate capacity exceedance probability from residual uncertainty for a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RiskInput"
+      responses:
+        "200":
+          description: Risk results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RiskResult"
+  /math/optimize/{mode}:
+    post:
+      operationId: solveOptimization
+      tags: [optimization]
+      summary: Allocate available fleet to routes for a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OptimizationInput"
+      responses:
+        "200":
+          description: Optimized vehicle allocation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OptimizationResult"
+  /math/simulate/{mode}:
+    post:
+      operationId: runSimulation
+      tags: [simulation]
+      summary: Recalculate pipeline for a what-if scenario on a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SimulationInput"
+      responses:
+        "200":
+          description: Baseline and scenario comparison
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SimulationResult"
+  /data/route-insights/{mode}:
+    get:
+      operationId: getRoutes
+      tags: [routes]
+      summary: Get route demand, risk, and demonstration map coordinates for a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
+      responses:
+        "200":
+          description: Route intelligence
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RouteInsight"
+  /math/explain/{mode}:
+    post:
+      operationId: explainInsights
+      tags: [ai]
+      summary: Generate operational review synthesis from mathematical evidence
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExplanationInput"
+      responses:
+        "200":
+          description: Operational review synthesis
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Explanation"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status: { type: string }
+      required: [status]
+    UploadDatasetInput:
+      type: object
+      properties:
+        data:
+          type: string
+      required: [data]
+    RouteInsight:
+      type: object
+      properties:
+        routeId: { type: string }
+        name: { type: string }
+        color: { type: string }
+        predictedDemand: { type: number }
+        historicalAverage: { type: number }
+        capacity: { type: number }
+        utilization: { type: number }
+        overcrowdingProbability: { type: number }
+        risk: { type: string }
+        recommendedBuses: { type: number }
+        baselineBuses: { type: number }
+        stations:
+          type: array
+          items: { type: string }
+        coordinates:
+          type: array
+          items:
+            type: array
+            items: { type: number }
+      required: [routeId, name, color, predictedDemand, historicalAverage, capacity, utilization, overcrowdingProbability, risk, recommendedBuses, baselineBuses, stations, coordinates]
+    DataSummary:
+      type: object
+      properties:
+        datasetName: { type: string }
+        isDemo: { type: boolean }
+        records: { type: number }
+        routes: { type: number }
+        stations: { type: number }
+        missingValues: { type: number }
+        invalidValues: { type: number }
+        dateStart: { type: string }
+        dateEnd: { type: string }
+        averageDemand: { type: number }
+        maxDemand: { type: number }
+        quality: { type: string }
+        columns:
+          type: array
+          items: { type: string }
+      required: [datasetName, isDemo, records, routes, stations, missingValues, invalidValues, dateStart, dateEnd, averageDemand, maxDemand, quality, columns]
+    ModelMetric:
+      type: object
+      properties:
+        model: { type: string }
+        mae: { type: number }
+        rmse: { type: number }
+        r2: { type: number }
+        isBest: { type: boolean }
+      required: [model, mae, rmse, r2, isBest]
+    ModelComparison:
+      type: object
+      properties:
+        metrics:
+          type: array
+          items: { $ref: "#/components/schemas/ModelMetric" }
+        selectedModel: { type: string }
+        methodology: { type: string }
+      required: [metrics, selectedModel, methodology]
+    PredictionInput:
+      type: object
+      properties:
+        date: { type: string }
+        hour: { type: number, minimum: 0, maximum: 23 }
+        rainfall: { type: number, minimum: 0 }
+        temperature: { type: number }
+        isHoliday: { type: boolean }
+        specialEvent: { type: boolean }
+        demandMultiplier: { type: number, minimum: 0.1, maximum: 3 }
+        model: { type: string }
+      required: [date, hour, rainfall, temperature, isHoliday, specialEvent, demandMultiplier]
+    PredictionRoute:
+      type: object
+      properties:
+        routeId: { type: string }
+        predictedDemand: { type: number }
+        historicalAverage: { type: number }
+        difference: { type: number }
+        percentDifference: { type: number }
+        lowerBound: { type: number }
+        upperBound: { type: number }
+      required: [routeId, predictedDemand, historicalAverage, difference, percentDifference, lowerBound, upperBound]
+    PredictionResult:
+      type: object
+      properties:
+        routes:
+          type: array
+          items: { $ref: "#/components/schemas/PredictionRoute" }
+        model: { type: string }
+        metrics: { $ref: "#/components/schemas/ModelMetric" }
+        conditions: { type: string }
+      required: [routes, model, metrics, conditions]
+    RiskInput:
+      type: object
+      properties:
+        predictions:
+          type: array
+          items: { $ref: "#/components/schemas/PredictionRoute" }
+        availableBuses: { type: number, minimum: 1 }
+        busCapacity: { type: number, minimum: 1 }
+      required: [predictions, availableBuses, busCapacity]
+    RiskRoute:
+      type: object
+      properties:
+        routeId: { type: string }
+        predictedDemand: { type: number }
+        capacity: { type: number }
+        utilization: { type: number }
+        probability: { type: number }
+        risk: { type: string }
+      required: [routeId, predictedDemand, capacity, utilization, probability, risk]
+    RiskResult:
+      type: object
+      properties:
+        routes:
+          type: array
+          items: { $ref: "#/components/schemas/RiskRoute" }
+        assumption: { type: string }
+      required: [routes, assumption]
+    OptimizationInput:
+      type: object
+      properties:
+        predictions:
+          type: array
+          items: { $ref: "#/components/schemas/PredictionRoute" }
+        availableBuses: { type: number, minimum: 1 }
+        busCapacity: { type: number, minimum: 1 }
+        minBusesPerRoute: { type: number, minimum: 0 }
+        maxBusesPerRoute: { type: number, minimum: 1 }
+      required: [predictions, availableBuses, busCapacity, minBusesPerRoute, maxBusesPerRoute]
+    OptimizationRoute:
+      type: object
+      properties:
+        routeId: { type: string }
+        buses: { type: number }
+        capacity: { type: number }
+        predictedDemand: { type: number }
+        utilization: { type: number }
+        overcrowding: { type: number }
+        unusedCapacity: { type: number }
+      required: [routeId, buses, capacity, predictedDemand, utilization, overcrowding, unusedCapacity]
+    OptimizationResult:
+      type: object
+      properties:
+        routes:
+          type: array
+          items: { $ref: "#/components/schemas/OptimizationRoute" }
+        objectiveValue: { type: number }
+        totalBuses: { type: number }
+        totalCapacity: { type: number }
+        totalDemand: { type: number }
+        formulation: { type: string }
+      required: [routes, objectiveValue, totalBuses, totalCapacity, totalDemand, formulation]
+    SimulationInput:
+      type: object
+      properties:
+        availableBuses: { type: number, minimum: 1 }
+        rainfall: { type: number, minimum: 0 }
+        temperature: { type: number }
+        isHoliday: { type: boolean }
+        specialEvent: { type: boolean }
+        demandMultiplier: { type: number, minimum: 0.1, maximum: 3 }
+        unavailableRoute: { type: string }
+        model: { type: string }
+      required: [availableBuses, rainfall, temperature, isHoliday, specialEvent, demandMultiplier]
+    SimulationResult:
+      type: object
+      properties:
+        baseline:
+          type: object
+          properties:
+            demand: { type: number }
+            risk: { type: number }
+            buses: { type: number }
+            objectiveValue: { type: number }
+          required: [demand, risk, buses, objectiveValue]
+        scenario:
+          type: object
+          properties:
+            demand: { type: number }
+            risk: { type: number }
+            buses: { type: number }
+            objectiveValue: { type: number }
+          required: [demand, risk, buses, objectiveValue]
+        routes:
+          type: array
+          items: { $ref: "#/components/schemas/RouteInsight" }
+        label: { type: string }
+      required: [baseline, scenario, routes, label]
+    Analysis:
+      type: object
+      properties:
+        correlations:
+          type: array
+          items:
+            type: object
+            properties:
+              variable: { type: string }
+              pearson: { type: number }
+              spearman: { type: number }
+              strength: { type: string }
+              interpretation: { type: string }
+            required: [variable, pearson, spearman, strength, interpretation]
+        regression:
+          type: object
+          properties:
+            equation: { type: string }
+            r2: { type: number }
+            coefficients:
+              type: array
+              items:
+                type: object
+                properties:
+                  variable: { type: string }
+                  coefficient: { type: number }
+                required: [variable, coefficient]
+          required: [equation, r2, coefficients]
+        fourier:
+          type: object
+          properties:
+            dominantPeriod: { type: number }
+            peakStrength: { type: number }
+            pattern: { type: string }
+            spectrum:
+              type: array
+              items:
+                type: object
+                properties:
+                  period: { type: number }
+                  amplitude: { type: number }
+                required: [period, amplitude]
+            actual:
+              type: array
+              items:
+                type: object
+                properties:
+                  label: { type: string }
+                  demand: { type: number }
+                  pattern: { type: number }
+                required: [label, demand, pattern]
+          required: [dominantPeriod, peakStrength, pattern, spectrum, actual]
+        formulae:
+          type: array
+          items: { type: string }
+      required: [correlations, regression, fourier, formulae]
+    Dashboard:
+      type: object
+      properties:
+        totalPredictedDemand: { type: number }
+        highRiskRoutes: { type: number }
+        averageRisk: { type: number }
+        availableBuses: { type: number }
+        totalRequiredCapacity: { type: number }
+        recommendedAdditionalBuses: { type: number }
+        routes:
+          type: array
+          items: { $ref: "#/components/schemas/RouteInsight" }
+        trend:
+          type: array
+          items:
+            type: object
+            properties:
+              label: { type: string }
+              demand: { type: number }
+              baseline: { type: number }
+            required: [label, demand, baseline]
+        riskDistribution:
+          type: array
+          items:
+            type: object
+            properties:
+              name: { type: string }
+              value: { type: number }
+            required: [name, value]
+        activity:
+          type: array
+          items:
+            type: object
+            properties:
+              title: { type: string }
+              detail: { type: string }
+              time: { type: string }
+            required: [title, detail, time]
+      required: [totalPredictedDemand, highRiskRoutes, averageRisk, availableBuses, totalRequiredCapacity, recommendedAdditionalBuses, routes, trend, riskDistribution, activity]
+    ExplanationInput:
+      type: object
+      properties:
+        topic: { type: string }
+        evidence: { type: string }
+      required: [topic, evidence]
+    Explanation:
+      type: object
+      properties:
+        configured: { type: boolean }
+        explanation: { type: string }
+        evidence: { type: string }
+      required: [configured, explanation, evidence]

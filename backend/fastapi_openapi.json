@@ -1,0 +1,3297 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "MetroMind AI",
+    "description": "MetroMind AI FastAPI foundation with canonical transport-mode validation.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/healthz": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Healthz",
+        "operationId": "healthz_api_healthz_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/transport/modes": {
+      "get": {
+        "tags": [
+          "transport"
+        ],
+        "summary": "Get Supported Transport Modes",
+        "description": "Return the canonical modes the FastAPI transport boundary recognizes.",
+        "operationId": "get_supported_transport_modes_api_transport_modes_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SupportedTransportModesResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/transport/modes/{mode}": {
+      "get": {
+        "tags": [
+          "transport"
+        ],
+        "summary": "Validate Transport Mode",
+        "description": "Normalize a canonical mode name and reject unknown values.",
+        "operationId": "validate_transport_mode_api_transport_modes__mode__get",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransportModeValidationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/data/routes/{mode}": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Get Routes By Mode",
+        "description": "Retrieve canonical routes for a specific transport mode.",
+        "operationId": "get_routes_by_mode_api_data_routes__mode__get",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Route"
+                  },
+                  "title": "Response Get Routes By Mode Api Data Routes  Mode  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/data/fleet/{mode}": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Get Fleet Config By Mode",
+        "description": "Retrieve demo vehicle capacity and fleet sizing for a specific transport mode.",
+        "operationId": "get_fleet_config_by_mode_api_data_fleet__mode__get",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FleetConfig"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/data/demo/{mode}": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Get Demo Dataset By Mode",
+        "description": "Retrieve the complete synthetic demonstration dataset for a transport mode.",
+        "operationId": "get_demo_dataset_by_mode_api_data_demo__mode__get",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemoDatasetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Reset Demo Dataset By Mode",
+        "description": "Reset the specified mode's in-memory dataset to its synthetic demonstration baseline.",
+        "operationId": "reset_demo_dataset_by_mode_api_data_demo__mode__post",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/data/summary/{mode}": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Get Dataset Summary By Mode",
+        "description": "Retrieve statistical summary and data quality metrics for a transport mode.",
+        "operationId": "get_dataset_summary_by_mode_api_data_summary__mode__get",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/data/dashboard/{mode}": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Get Dashboard By Mode",
+        "description": "Retrieve operational control room summary for a specific transport mode.",
+        "operationId": "get_dashboard_by_mode_api_data_dashboard__mode__get",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/data/route-insights/{mode}": {
+      "get": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Get Route Insights By Mode",
+        "description": "Retrieve live corridor insights combining routes, forecast demand, and risk.",
+        "operationId": "get_route_insights_by_mode_api_data_route_insights__mode__get",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RouteInsightResponse"
+                  },
+                  "title": "Response Get Route Insights By Mode Api Data Route Insights  Mode  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/data/upload/{mode}": {
+      "post": {
+        "tags": [
+          "data"
+        ],
+        "summary": "Upload Dataset By Mode",
+        "description": "Upload and validate a custom CSV dataset for the specified transport mode.",
+        "operationId": "upload_dataset_by_mode_api_data_upload__mode__post",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadDatasetPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/math/models/{mode}": {
+      "get": {
+        "tags": [
+          "mathematics"
+        ],
+        "summary": "Evaluate Models",
+        "description": "Evaluate and compare Linear Regression, Random Forest, and Gradient Boosting estimators.",
+        "operationId": "evaluate_models_api_math_models__mode__get",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          },
+          {
+            "name": "route_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional route filter (e.g. 'R1', 'B2').",
+              "title": "Route Id"
+            },
+            "description": "Optional route filter (e.g. 'R1', 'B2')."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelComparisonResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/math/residuals/{mode}": {
+      "get": {
+        "tags": [
+          "mathematics"
+        ],
+        "summary": "Get Residuals",
+        "description": "Retrieve held-out test residual distribution statistics.",
+        "operationId": "get_residuals_api_math_residuals__mode__get",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          },
+          {
+            "name": "route_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional route filter.",
+              "title": "Route Id"
+            },
+            "description": "Optional route filter."
+          },
+          {
+            "name": "model_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional single model name filter.",
+              "title": "Model Name"
+            },
+            "description": "Optional single model name filter."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResidualAnalysisEndpointResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/math/correlations/{mode}": {
+      "get": {
+        "tags": [
+          "mathematics"
+        ],
+        "summary": "Get Correlations",
+        "description": "Retrieve Pearson and Spearman feature-target correlation coefficients.",
+        "operationId": "get_correlations_api_math_correlations__mode__get",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          },
+          {
+            "name": "route_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional route filter.",
+              "title": "Route Id"
+            },
+            "description": "Optional route filter."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CorrelationsEndpointResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/math/seasonality/{mode}": {
+      "get": {
+        "tags": [
+          "mathematics"
+        ],
+        "summary": "Get Seasonality",
+        "description": "Analyze cyclical diurnal and seasonal periodicities using Fast Fourier Transform.",
+        "operationId": "get_seasonality_api_math_seasonality__mode__get",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          },
+          {
+            "name": "route_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional route filter.",
+              "title": "Route Id"
+            },
+            "description": "Optional route filter."
+          },
+          {
+            "name": "top_k",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 20,
+              "minimum": 1,
+              "description": "Number of dominant harmonics to extract.",
+              "default": 5,
+              "title": "Top K"
+            },
+            "description": "Number of dominant harmonics to extract."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeasonalityEndpointResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/math/analysis/{mode}": {
+      "get": {
+        "tags": [
+          "mathematics"
+        ],
+        "summary": "Get Analysis By Mode",
+        "description": "Retrieve statistical correlation, regression fit, and Fourier seasonality for a transport mode.",
+        "operationId": "get_analysis_by_mode_api_math_analysis__mode__get",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalysisResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/math/models-summary/{mode}": {
+      "get": {
+        "tags": [
+          "mathematics"
+        ],
+        "summary": "Get Models Summary By Mode",
+        "description": "Retrieve side-by-side holdout metrics and best model selection for the frontend Models page.",
+        "operationId": "get_models_summary_by_mode_api_math_models_summary__mode__get",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelComparisonSummaryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/math/predict/{mode}": {
+      "post": {
+        "tags": [
+          "mathematics"
+        ],
+        "summary": "Predict By Mode",
+        "description": "Forecast route-level passenger demand under customizable scenario conditions.",
+        "operationId": "predict_by_mode_api_math_predict__mode__post",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PredictionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredictionResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/math/optimize/{mode}": {
+      "post": {
+        "tags": [
+          "mathematics"
+        ],
+        "summary": "Optimize By Mode",
+        "description": "Allocate available fleet across routes to minimize residual overcrowding.",
+        "operationId": "optimize_by_mode_api_math_optimize__mode__post",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptimizationInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptimizationResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/math/simulate/{mode}": {
+      "post": {
+        "tags": [
+          "mathematics"
+        ],
+        "summary": "Simulate By Mode",
+        "description": "Stress-test network conditions and evaluate baseline vs scenario metrics.",
+        "operationId": "simulate_by_mode_api_math_simulate__mode__post",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimulationInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimulationResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/math/explain/{mode}": {
+      "post": {
+        "tags": [
+          "mathematics"
+        ],
+        "summary": "Explain By Mode",
+        "description": "Generate operational review synthesis from mathematical evidence.",
+        "operationId": "explain_by_mode_api_math_explain__mode__post",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExplanationInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExplanationResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/risk/{mode}": {
+      "get": {
+        "tags": [
+          "risk"
+        ],
+        "summary": "Get Risk Assessment",
+        "description": "Compute and return per-observation crowding risk for all routes.\n\nReturns one record per (route_id, test-partition timestamp) pair,\nsorted by (route_id, timestamp).\n\nThe predicted demand comes from the Phase 4 best-performing regressor\n(selected by lowest held-out RMSE). Uncertainty is estimated from the\nstandard deviation of held-out test-set residuals.\n\nNOTE: Results are derived from synthetic demonstration data and must not\nbe treated as real operational safety assessments.",
+        "operationId": "get_risk_assessment_api_risk__mode__get",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskAssessmentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/risk/{mode}/summary": {
+      "get": {
+        "tags": [
+          "risk"
+        ],
+        "summary": "Get Risk Summary",
+        "description": "Compute and return aggregated risk statistics for a transport mode.\n\nProvides fleet-level summary without per-observation detail:\n- mode\n- best model name (by lowest held-out RMSE)\n- capacity per vehicle\n- number of routes analyzed\n- highest-risk route (by average risk score)\n- average and maximum risk scores\n- maximum overload probability\n- count of observations at each risk level\n\nNOTE: Results are derived from synthetic demonstration data and must not\nbe treated as real operational safety assessments.",
+        "operationId": "get_risk_summary_api_risk__mode__summary_get",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskSummaryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/risk/{mode}/calculate": {
+      "post": {
+        "tags": [
+          "risk"
+        ],
+        "summary": "Calculate Dynamic Risk By Mode",
+        "description": "Calculate interactive exceedance probabilities and risk levels from residual uncertainty.",
+        "operationId": "calculate_dynamic_risk_by_mode_api_risk__mode__calculate_post",
+        "parameters": [
+          {
+            "name": "mode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Mode"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DynamicRiskInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DynamicRiskResult"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ActivityItem": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          },
+          "time": {
+            "type": "string",
+            "title": "Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "detail",
+          "time"
+        ],
+        "title": "ActivityItem",
+        "description": "Operational activity or model refresh event."
+      },
+      "AnalysisResponse": {
+        "properties": {
+          "correlations": {
+            "items": {
+              "$ref": "#/components/schemas/CorrelationRow"
+            },
+            "type": "array",
+            "title": "Correlations"
+          },
+          "regression": {
+            "$ref": "#/components/schemas/RegressionSummary"
+          },
+          "fourier": {
+            "$ref": "#/components/schemas/FourierSummary"
+          },
+          "formulae": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Formulae"
+          }
+        },
+        "type": "object",
+        "required": [
+          "correlations",
+          "regression",
+          "fourier",
+          "formulae"
+        ],
+        "title": "AnalysisResponse",
+        "description": "Comprehensive mathematical analysis response for the Analysis page."
+      },
+      "CorrelationDetailResponse": {
+        "properties": {
+          "metric": {
+            "type": "string",
+            "title": "Metric"
+          },
+          "coefficient": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coefficient"
+          },
+          "p_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P Value"
+          },
+          "sample_size": {
+            "type": "integer",
+            "title": "Sample Size"
+          },
+          "is_defined": {
+            "type": "boolean",
+            "title": "Is Defined"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "metric",
+          "sample_size",
+          "is_defined"
+        ],
+        "title": "CorrelationDetailResponse",
+        "description": "Statistical output of a bivariate correlation test."
+      },
+      "CorrelationRow": {
+        "properties": {
+          "variable": {
+            "type": "string",
+            "title": "Variable"
+          },
+          "pearson": {
+            "type": "number",
+            "title": "Pearson"
+          },
+          "spearman": {
+            "type": "number",
+            "title": "Spearman"
+          },
+          "strength": {
+            "type": "string",
+            "title": "Strength"
+          },
+          "interpretation": {
+            "type": "string",
+            "title": "Interpretation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "variable",
+          "pearson",
+          "spearman",
+          "strength",
+          "interpretation"
+        ],
+        "title": "CorrelationRow",
+        "description": "Correlation summary row for the analysis matrix."
+      },
+      "CorrelationsEndpointResponse": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "title": "Mode"
+          },
+          "route_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Route Id"
+          },
+          "sample_size": {
+            "type": "integer",
+            "title": "Sample Size"
+          },
+          "feature_correlations": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "$ref": "#/components/schemas/CorrelationDetailResponse"
+              },
+              "type": "object"
+            },
+            "type": "object",
+            "title": "Feature Correlations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode",
+          "sample_size",
+          "feature_correlations"
+        ],
+        "title": "CorrelationsEndpointResponse",
+        "description": "Endpoint response for feature-to-demand correlation analysis."
+      },
+      "DashboardResponse": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "title": "Mode",
+            "description": "Canonical transport mode ('RAILWAY' or 'BUS')."
+          },
+          "totalPredictedDemand": {
+            "type": "number",
+            "title": "Totalpredicteddemand",
+            "description": "Sum of predicted demand across all mode routes."
+          },
+          "highRiskRoutes": {
+            "type": "integer",
+            "title": "Highriskroutes",
+            "description": "Number of routes currently categorized as HIGH or CRITICAL."
+          },
+          "averageRisk": {
+            "type": "number",
+            "title": "Averagerisk",
+            "description": "Mean overcrowding exceedance probability across routes."
+          },
+          "availableBuses": {
+            "type": "integer",
+            "title": "Availablebuses",
+            "description": "Total active fleet size for this mode."
+          },
+          "totalRequiredCapacity": {
+            "type": "integer",
+            "title": "Totalrequiredcapacity",
+            "description": "Total passenger capacity required to meet demand."
+          },
+          "recommendedAdditionalBuses": {
+            "type": "integer",
+            "title": "Recommendedadditionalbuses",
+            "description": "Additional vehicles recommended by optimization."
+          },
+          "routes": {
+            "items": {
+              "$ref": "#/components/schemas/RouteInsightResponse"
+            },
+            "type": "array",
+            "title": "Routes",
+            "description": "Corridor-level insights and map geometry."
+          },
+          "trend": {
+            "items": {
+              "$ref": "#/components/schemas/HourlyTrendResponse"
+            },
+            "type": "array",
+            "title": "Trend",
+            "description": "24-hour network demand profile."
+          },
+          "riskDistribution": {
+            "items": {
+              "$ref": "#/components/schemas/RiskDistributionItem"
+            },
+            "type": "array",
+            "title": "Riskdistribution",
+            "description": "Route count breakdown across risk bands."
+          },
+          "activity": {
+            "items": {
+              "$ref": "#/components/schemas/ActivityItem"
+            },
+            "type": "array",
+            "title": "Activity",
+            "description": "Recent operational activity log."
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode",
+          "totalPredictedDemand",
+          "highRiskRoutes",
+          "averageRisk",
+          "availableBuses",
+          "totalRequiredCapacity",
+          "recommendedAdditionalBuses",
+          "routes",
+          "trend",
+          "riskDistribution",
+          "activity"
+        ],
+        "title": "DashboardResponse",
+        "description": "Complete operational control room summary for the specified transport mode."
+      },
+      "DataSummary": {
+        "properties": {
+          "dataset_name": {
+            "type": "string",
+            "title": "Dataset Name",
+            "description": "Dataset title or identifier."
+          },
+          "mode": {
+            "$ref": "#/components/schemas/TransportMode",
+            "description": "Canonical transport mode."
+          },
+          "is_demo": {
+            "type": "boolean",
+            "title": "Is Demo",
+            "description": "Whether this represents the default synthetic demonstration dataset."
+          },
+          "records": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Records",
+            "description": "Total record count."
+          },
+          "routes": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Routes",
+            "description": "Number of distinct routes observed."
+          },
+          "stations": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Stations",
+            "description": "Number of distinct stations observed."
+          },
+          "missing_values": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Missing Values",
+            "description": "Count of empty or unpopulated optional cells."
+          },
+          "invalid_values": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Invalid Values",
+            "description": "Count of unparseable or rejected raw rows."
+          },
+          "date_start": {
+            "type": "string",
+            "title": "Date Start",
+            "description": "Earliest observation timestamp (YYYY-MM-DD)."
+          },
+          "date_end": {
+            "type": "string",
+            "title": "Date End",
+            "description": "Latest observation timestamp (YYYY-MM-DD)."
+          },
+          "average_demand": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Average Demand",
+            "description": "Mean passenger demand per observation."
+          },
+          "max_demand": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Max Demand",
+            "description": "Maximum observed passenger demand in single observation."
+          },
+          "quality": {
+            "type": "string",
+            "title": "Quality",
+            "description": "Overall data quality assessment (e.g. 'Excellent', 'Review required')."
+          },
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Columns",
+            "description": "List of canonical data fields provided by this dataset."
+          }
+        },
+        "type": "object",
+        "required": [
+          "dataset_name",
+          "mode",
+          "is_demo",
+          "records",
+          "routes",
+          "stations",
+          "missing_values",
+          "invalid_values",
+          "date_start",
+          "date_end",
+          "average_demand",
+          "max_demand",
+          "quality",
+          "columns"
+        ],
+        "title": "DataSummary",
+        "description": "Statistical and quality summary of an active transit dataset."
+      },
+      "DatasetMetadata": {
+        "properties": {
+          "dataset_name": {
+            "type": "string",
+            "title": "Dataset Name",
+            "description": "Dataset identifier or source filename."
+          },
+          "mode": {
+            "$ref": "#/components/schemas/TransportMode",
+            "description": "Associated transport mode."
+          },
+          "is_demo": {
+            "type": "boolean",
+            "title": "Is Demo",
+            "description": "Whether this dataset contains synthetic demo data.",
+            "default": false
+          },
+          "record_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Record Count",
+            "description": "Total number of valid demand records in the dataset."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "Timestamp when dataset was initialized or uploaded."
+          }
+        },
+        "type": "object",
+        "required": [
+          "dataset_name",
+          "mode",
+          "record_count",
+          "created_at"
+        ],
+        "title": "DatasetMetadata",
+        "description": "Metadata describing a loaded transit demand dataset."
+      },
+      "DemandRecord": {
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp",
+            "description": "Observation timestamp in UTC (ISO 8601)."
+          },
+          "route_id": {
+            "type": "string",
+            "title": "Route Id",
+            "description": "Transit route identifier (e.g. 'R1', 'B2')."
+          },
+          "station_id": {
+            "type": "string",
+            "title": "Station Id",
+            "description": "Station or stop identifier where observation occurred."
+          },
+          "passenger_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Passenger Count",
+            "description": "Observed or simulated passenger count."
+          },
+          "day_of_week": {
+            "type": "integer",
+            "maximum": 6.0,
+            "minimum": 0.0,
+            "title": "Day Of Week",
+            "description": "Day of week index (0=Sunday to 6=Saturday as in transit calendar)."
+          },
+          "is_weekend": {
+            "type": "boolean",
+            "title": "Is Weekend",
+            "description": "True if Saturday or Sunday."
+          },
+          "is_holiday": {
+            "type": "boolean",
+            "title": "Is Holiday",
+            "description": "Whether the date is a gazetted public holiday.",
+            "default": false
+          },
+          "temperature": {
+            "type": "number",
+            "title": "Temperature",
+            "description": "Ambient temperature in degrees Celsius."
+          },
+          "rainfall": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Rainfall",
+            "description": "Precipitation level in millimeters."
+          },
+          "special_event": {
+            "type": "boolean",
+            "title": "Special Event",
+            "description": "True if an extraordinary event (festival, match) impacted demand.",
+            "default": false
+          },
+          "mode": {
+            "$ref": "#/components/schemas/TransportMode",
+            "description": "Canonical transport mode to which this observation belongs."
+          }
+        },
+        "type": "object",
+        "required": [
+          "timestamp",
+          "route_id",
+          "station_id",
+          "passenger_count",
+          "day_of_week",
+          "is_weekend",
+          "temperature",
+          "rainfall",
+          "mode"
+        ],
+        "title": "DemandRecord",
+        "description": "An individual passenger transit demand observation."
+      },
+      "DemoDatasetResponse": {
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/DatasetMetadata",
+            "description": "Summary metadata for the dataset."
+          },
+          "records": {
+            "items": {
+              "$ref": "#/components/schemas/DemandRecord"
+            },
+            "type": "array",
+            "title": "Records",
+            "description": "Collection of synthetic demand observations."
+          }
+        },
+        "type": "object",
+        "required": [
+          "metadata",
+          "records"
+        ],
+        "title": "DemoDatasetResponse",
+        "description": "Payload returning demo records accompanied by dataset metadata."
+      },
+      "DynamicRiskInput": {
+        "properties": {
+          "predictions": {
+            "items": {
+              "$ref": "#/components/schemas/PredictionRoute"
+            },
+            "type": "array",
+            "title": "Predictions"
+          },
+          "availableBuses": {
+            "type": "integer",
+            "title": "Availablebuses"
+          },
+          "busCapacity": {
+            "type": "integer",
+            "title": "Buscapacity"
+          }
+        },
+        "type": "object",
+        "required": [
+          "predictions",
+          "availableBuses",
+          "busCapacity"
+        ],
+        "title": "DynamicRiskInput",
+        "description": "Interactive risk recalculation scenario parameters."
+      },
+      "DynamicRiskResult": {
+        "properties": {
+          "routes": {
+            "items": {
+              "$ref": "#/components/schemas/DynamicRiskRoute"
+            },
+            "type": "array",
+            "title": "Routes"
+          },
+          "assumption": {
+            "type": "string",
+            "title": "Assumption"
+          }
+        },
+        "type": "object",
+        "required": [
+          "routes",
+          "assumption"
+        ],
+        "title": "DynamicRiskResult",
+        "description": "Interactive risk calculation output."
+      },
+      "DynamicRiskRoute": {
+        "properties": {
+          "routeId": {
+            "type": "string",
+            "title": "Routeid"
+          },
+          "predictedDemand": {
+            "type": "number",
+            "title": "Predicteddemand"
+          },
+          "capacity": {
+            "type": "number",
+            "title": "Capacity"
+          },
+          "utilization": {
+            "type": "number",
+            "title": "Utilization"
+          },
+          "probability": {
+            "type": "number",
+            "title": "Probability"
+          },
+          "risk": {
+            "type": "string",
+            "title": "Risk"
+          }
+        },
+        "type": "object",
+        "required": [
+          "routeId",
+          "predictedDemand",
+          "capacity",
+          "utilization",
+          "probability",
+          "risk"
+        ],
+        "title": "DynamicRiskRoute",
+        "description": "Interactive risk evaluation for a single corridor."
+      },
+      "ExplanationInput": {
+        "properties": {
+          "topic": {
+            "type": "string",
+            "title": "Topic"
+          },
+          "evidence": {
+            "type": "string",
+            "title": "Evidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "topic",
+          "evidence"
+        ],
+        "title": "ExplanationInput",
+        "description": "Input parameters for AI explanation."
+      },
+      "ExplanationResponse": {
+        "properties": {
+          "configured": {
+            "type": "boolean",
+            "title": "Configured"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          },
+          "evidence": {
+            "type": "string",
+            "title": "Evidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "configured",
+          "explanation",
+          "evidence"
+        ],
+        "title": "ExplanationResponse",
+        "description": "Explanation response from Gemini or structured deterministic fallback."
+      },
+      "FleetConfig": {
+        "properties": {
+          "mode": {
+            "$ref": "#/components/schemas/TransportMode",
+            "description": "Associated canonical transport mode."
+          },
+          "vehicle_capacity": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Vehicle Capacity",
+            "description": "Nominal passenger capacity per transit vehicle (e.g. per train or bus)."
+          },
+          "fleet_size": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Fleet Size",
+            "description": "Total fleet size / number of active vehicles allocated for demo planning."
+          },
+          "vehicle_type_name": {
+            "type": "string",
+            "title": "Vehicle Type Name",
+            "description": "Descriptive vehicle nomenclature (e.g. 'Train', 'Bus')."
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode",
+          "vehicle_capacity",
+          "fleet_size",
+          "vehicle_type_name"
+        ],
+        "title": "FleetConfig",
+        "description": "Transport-neutral fleet and vehicle capacity configuration."
+      },
+      "FourierActualItem": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "demand": {
+            "type": "number",
+            "title": "Demand"
+          },
+          "pattern": {
+            "type": "number",
+            "title": "Pattern"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "demand",
+          "pattern"
+        ],
+        "title": "FourierActualItem",
+        "description": "Weekly/daily diurnal demand point vs fitted periodic pattern."
+      },
+      "FourierSpectrumItem": {
+        "properties": {
+          "period": {
+            "type": "integer",
+            "title": "Period"
+          },
+          "amplitude": {
+            "type": "number",
+            "title": "Amplitude"
+          }
+        },
+        "type": "object",
+        "required": [
+          "period",
+          "amplitude"
+        ],
+        "title": "FourierSpectrumItem",
+        "description": "Single discrete frequency component."
+      },
+      "FourierSummary": {
+        "properties": {
+          "dominantPeriod": {
+            "type": "number",
+            "title": "Dominantperiod"
+          },
+          "peakStrength": {
+            "type": "number",
+            "title": "Peakstrength"
+          },
+          "pattern": {
+            "type": "string",
+            "title": "Pattern"
+          },
+          "spectrum": {
+            "items": {
+              "$ref": "#/components/schemas/FourierSpectrumItem"
+            },
+            "type": "array",
+            "title": "Spectrum"
+          },
+          "actual": {
+            "items": {
+              "$ref": "#/components/schemas/FourierActualItem"
+            },
+            "type": "array",
+            "title": "Actual"
+          }
+        },
+        "type": "object",
+        "required": [
+          "dominantPeriod",
+          "peakStrength",
+          "pattern",
+          "spectrum",
+          "actual"
+        ],
+        "title": "FourierSummary",
+        "description": "Fourier cyclical periodicity analysis."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HarmonicResponse": {
+        "properties": {
+          "harmonic_index": {
+            "type": "integer",
+            "title": "Harmonic Index",
+            "description": "Original FFT frequency bin index k (preserved across sorting)."
+          },
+          "frequency": {
+            "type": "number",
+            "title": "Frequency",
+            "description": "Frequency in cycles per hour."
+          },
+          "period_hours": {
+            "type": "number",
+            "title": "Period Hours",
+            "description": "Period duration in hours (1 / frequency)."
+          },
+          "amplitude": {
+            "type": "number",
+            "title": "Amplitude",
+            "description": "Physical peak amplitude in passenger demand units."
+          },
+          "power": {
+            "type": "number",
+            "title": "Power",
+            "description": "Spectral power (amplitude squared)."
+          },
+          "phase_radians": {
+            "type": "number",
+            "title": "Phase Radians",
+            "description": "Phase offset in radians."
+          }
+        },
+        "type": "object",
+        "required": [
+          "harmonic_index",
+          "frequency",
+          "period_hours",
+          "amplitude",
+          "power",
+          "phase_radians"
+        ],
+        "title": "HarmonicResponse",
+        "description": "Fourier spectral component representing a periodic frequency cycle."
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Service availability indicator."
+          },
+          "service": {
+            "type": "string",
+            "title": "Service",
+            "description": "Backend identifier."
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "service"
+        ],
+        "title": "HealthResponse",
+        "description": "Deterministic health-check payload."
+      },
+      "HourlyTrendResponse": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label",
+            "description": "Hour label (e.g. '08:00')."
+          },
+          "demand": {
+            "type": "number",
+            "title": "Demand",
+            "description": "Average demand for this hour."
+          },
+          "baseline": {
+            "type": "number",
+            "title": "Baseline",
+            "description": "Baseline demand for comparison."
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "demand",
+          "baseline"
+        ],
+        "title": "HourlyTrendResponse",
+        "description": "Hourly passenger demand trend point."
+      },
+      "LevelCountsResponse": {
+        "properties": {
+          "LOW": {
+            "type": "integer",
+            "title": "Low"
+          },
+          "MEDIUM": {
+            "type": "integer",
+            "title": "Medium"
+          },
+          "HIGH": {
+            "type": "integer",
+            "title": "High"
+          },
+          "CRITICAL": {
+            "type": "integer",
+            "title": "Critical"
+          }
+        },
+        "type": "object",
+        "required": [
+          "LOW",
+          "MEDIUM",
+          "HIGH",
+          "CRITICAL"
+        ],
+        "title": "LevelCountsResponse",
+        "description": "Count of observations at each risk level."
+      },
+      "ModelComparisonResponse": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "title": "Mode"
+          },
+          "route_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Route Id"
+          },
+          "best_model": {
+            "type": "string",
+            "title": "Best Model"
+          },
+          "selection_criterion": {
+            "type": "string",
+            "title": "Selection Criterion"
+          },
+          "training_count": {
+            "type": "integer",
+            "title": "Training Count"
+          },
+          "test_count": {
+            "type": "integer",
+            "title": "Test Count"
+          },
+          "train_end_timestamp": {
+            "type": "string",
+            "title": "Train End Timestamp"
+          },
+          "test_start_timestamp": {
+            "type": "string",
+            "title": "Test Start Timestamp"
+          },
+          "models": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ModelMetricsResponse"
+            },
+            "type": "object",
+            "title": "Models"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode",
+          "best_model",
+          "selection_criterion",
+          "training_count",
+          "test_count",
+          "train_end_timestamp",
+          "test_start_timestamp",
+          "models"
+        ],
+        "title": "ModelComparisonResponse",
+        "description": "Side-by-side comparison of genuine regression estimators on test data."
+      },
+      "ModelComparisonSummaryResponse": {
+        "properties": {
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/ModelMetric"
+            },
+            "type": "array",
+            "title": "Metrics"
+          },
+          "selectedModel": {
+            "type": "string",
+            "title": "Selectedmodel"
+          },
+          "methodology": {
+            "type": "string",
+            "title": "Methodology"
+          }
+        },
+        "type": "object",
+        "required": [
+          "metrics",
+          "selectedModel",
+          "methodology"
+        ],
+        "title": "ModelComparisonSummaryResponse",
+        "description": "Clean model comparison payload expected by the frontend Models page."
+      },
+      "ModelMetric": {
+        "properties": {
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "mae": {
+            "type": "number",
+            "title": "Mae"
+          },
+          "rmse": {
+            "type": "number",
+            "title": "Rmse"
+          },
+          "r2": {
+            "type": "number",
+            "title": "R2"
+          },
+          "isBest": {
+            "type": "boolean",
+            "title": "Isbest"
+          }
+        },
+        "type": "object",
+        "required": [
+          "model",
+          "mae",
+          "rmse",
+          "r2",
+          "isBest"
+        ],
+        "title": "ModelMetric",
+        "description": "Single model metrics representation for the models comparison view."
+      },
+      "ModelMetricsResponse": {
+        "properties": {
+          "model_name": {
+            "type": "string",
+            "title": "Model Name"
+          },
+          "mae": {
+            "type": "number",
+            "title": "Mae"
+          },
+          "rmse": {
+            "type": "number",
+            "title": "Rmse"
+          },
+          "r2": {
+            "type": "number",
+            "title": "R2"
+          },
+          "model_info": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Model Info"
+          }
+        },
+        "type": "object",
+        "required": [
+          "model_name",
+          "mae",
+          "rmse",
+          "r2",
+          "model_info"
+        ],
+        "title": "ModelMetricsResponse",
+        "description": "Evaluation summary metrics for a single demand estimator."
+      },
+      "OptimizationInput": {
+        "properties": {
+          "predictions": {
+            "items": {
+              "$ref": "#/components/schemas/PredictionRoute"
+            },
+            "type": "array",
+            "title": "Predictions"
+          },
+          "availableBuses": {
+            "type": "integer",
+            "title": "Availablebuses"
+          },
+          "busCapacity": {
+            "type": "integer",
+            "title": "Buscapacity"
+          },
+          "minBusesPerRoute": {
+            "type": "integer",
+            "title": "Minbusesperroute",
+            "default": 1
+          },
+          "maxBusesPerRoute": {
+            "type": "integer",
+            "title": "Maxbusesperroute",
+            "default": 4
+          }
+        },
+        "type": "object",
+        "required": [
+          "predictions",
+          "availableBuses",
+          "busCapacity"
+        ],
+        "title": "OptimizationInput",
+        "description": "Parameters for integer vehicle allocation optimization."
+      },
+      "OptimizationResult": {
+        "properties": {
+          "routes": {
+            "items": {
+              "$ref": "#/components/schemas/OptimizationRoute"
+            },
+            "type": "array",
+            "title": "Routes"
+          },
+          "objectiveValue": {
+            "type": "number",
+            "title": "Objectivevalue"
+          },
+          "totalBuses": {
+            "type": "integer",
+            "title": "Totalbuses"
+          },
+          "totalCapacity": {
+            "type": "integer",
+            "title": "Totalcapacity"
+          },
+          "totalDemand": {
+            "type": "number",
+            "title": "Totaldemand"
+          },
+          "formulation": {
+            "type": "string",
+            "title": "Formulation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "routes",
+          "objectiveValue",
+          "totalBuses",
+          "totalCapacity",
+          "totalDemand",
+          "formulation"
+        ],
+        "title": "OptimizationResult",
+        "description": "Output of integer vehicle allocation solver."
+      },
+      "OptimizationRoute": {
+        "properties": {
+          "routeId": {
+            "type": "string",
+            "title": "Routeid"
+          },
+          "buses": {
+            "type": "integer",
+            "title": "Buses"
+          },
+          "capacity": {
+            "type": "integer",
+            "title": "Capacity"
+          },
+          "predictedDemand": {
+            "type": "number",
+            "title": "Predicteddemand"
+          },
+          "utilization": {
+            "type": "number",
+            "title": "Utilization"
+          },
+          "overcrowding": {
+            "type": "number",
+            "title": "Overcrowding"
+          },
+          "unusedCapacity": {
+            "type": "number",
+            "title": "Unusedcapacity"
+          }
+        },
+        "type": "object",
+        "required": [
+          "routeId",
+          "buses",
+          "capacity",
+          "predictedDemand",
+          "utilization",
+          "overcrowding",
+          "unusedCapacity"
+        ],
+        "title": "OptimizationRoute",
+        "description": "Allocated vehicle sizing and resulting capacity coverage for a route."
+      },
+      "PredictionInput": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "hour": {
+            "type": "integer",
+            "title": "Hour"
+          },
+          "rainfall": {
+            "type": "number",
+            "title": "Rainfall",
+            "default": 0.0
+          },
+          "temperature": {
+            "type": "number",
+            "title": "Temperature",
+            "default": 20.0
+          },
+          "demandMultiplier": {
+            "type": "number",
+            "title": "Demandmultiplier",
+            "default": 1.0
+          },
+          "isHoliday": {
+            "type": "boolean",
+            "title": "Isholiday",
+            "default": false
+          },
+          "specialEvent": {
+            "type": "boolean",
+            "title": "Specialevent",
+            "default": false
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "hour"
+        ],
+        "title": "PredictionInput",
+        "description": "Scenario conditions vector for route-level passenger demand prediction."
+      },
+      "PredictionResult": {
+        "properties": {
+          "routes": {
+            "items": {
+              "$ref": "#/components/schemas/PredictionRoute"
+            },
+            "type": "array",
+            "title": "Routes"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "metrics": {
+            "$ref": "#/components/schemas/ModelMetric"
+          },
+          "conditions": {
+            "type": "string",
+            "title": "Conditions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "routes",
+          "model",
+          "metrics",
+          "conditions"
+        ],
+        "title": "PredictionResult",
+        "description": "Complete prediction output containing route forecasts, active model, and metrics."
+      },
+      "PredictionRoute": {
+        "properties": {
+          "routeId": {
+            "type": "string",
+            "title": "Routeid"
+          },
+          "predictedDemand": {
+            "type": "number",
+            "title": "Predicteddemand"
+          },
+          "historicalAverage": {
+            "type": "number",
+            "title": "Historicalaverage"
+          },
+          "difference": {
+            "type": "number",
+            "title": "Difference"
+          },
+          "percentDifference": {
+            "type": "number",
+            "title": "Percentdifference"
+          },
+          "lowerBound": {
+            "type": "number",
+            "title": "Lowerbound"
+          },
+          "upperBound": {
+            "type": "number",
+            "title": "Upperbound"
+          }
+        },
+        "type": "object",
+        "required": [
+          "routeId",
+          "predictedDemand",
+          "historicalAverage",
+          "difference",
+          "percentDifference",
+          "lowerBound",
+          "upperBound"
+        ],
+        "title": "PredictionRoute",
+        "description": "Single route predicted passenger demand with uncertainty interval."
+      },
+      "RegressionCoefficient": {
+        "properties": {
+          "variable": {
+            "type": "string",
+            "title": "Variable"
+          },
+          "coefficient": {
+            "type": "number",
+            "title": "Coefficient"
+          }
+        },
+        "type": "object",
+        "required": [
+          "variable",
+          "coefficient"
+        ],
+        "title": "RegressionCoefficient",
+        "description": "Single regressor coefficient."
+      },
+      "RegressionSummary": {
+        "properties": {
+          "equation": {
+            "type": "string",
+            "title": "Equation"
+          },
+          "r2": {
+            "type": "number",
+            "title": "R2"
+          },
+          "coefficients": {
+            "items": {
+              "$ref": "#/components/schemas/RegressionCoefficient"
+            },
+            "type": "array",
+            "title": "Coefficients"
+          }
+        },
+        "type": "object",
+        "required": [
+          "equation",
+          "r2",
+          "coefficients"
+        ],
+        "title": "RegressionSummary",
+        "description": "Ordinary least squares regression fit summary."
+      },
+      "ResidualAnalysisEndpointResponse": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "title": "Mode"
+          },
+          "route_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Route Id"
+          },
+          "best_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Model"
+          },
+          "models": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ResidualsSummaryResponse"
+            },
+            "type": "object",
+            "title": "Models"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode",
+          "models"
+        ],
+        "title": "ResidualAnalysisEndpointResponse",
+        "description": "Endpoint response for out-of-sample residual error analysis."
+      },
+      "ResidualsSummaryResponse": {
+        "properties": {
+          "mean_residual": {
+            "type": "number",
+            "title": "Mean Residual"
+          },
+          "mae": {
+            "type": "number",
+            "title": "Mae"
+          },
+          "rmse": {
+            "type": "number",
+            "title": "Rmse"
+          },
+          "min_residual": {
+            "type": "number",
+            "title": "Min Residual"
+          },
+          "max_residual": {
+            "type": "number",
+            "title": "Max Residual"
+          },
+          "std_residual": {
+            "type": "number",
+            "title": "Std Residual"
+          },
+          "sample_size": {
+            "type": "integer",
+            "title": "Sample Size"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mean_residual",
+          "mae",
+          "rmse",
+          "min_residual",
+          "max_residual",
+          "std_residual",
+          "sample_size"
+        ],
+        "title": "ResidualsSummaryResponse",
+        "description": "Distribution statistics for model prediction residuals."
+      },
+      "RiskAssessmentResponse": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "title": "Mode",
+            "description": "Canonical transport mode ('RAILWAY' or 'BUS')."
+          },
+          "best_model_name": {
+            "type": "string",
+            "title": "Best Model Name",
+            "description": "Phase 4 model selected by lowest held-out RMSE."
+          },
+          "capacity": {
+            "type": "integer",
+            "title": "Capacity",
+            "description": "Per-vehicle passenger capacity for this mode."
+          },
+          "mode_sigma": {
+            "type": "number",
+            "title": "Mode Sigma",
+            "description": "Mode-wide uncertainty sigma from the multi-route model evaluation."
+          },
+          "num_observations": {
+            "type": "integer",
+            "title": "Num Observations",
+            "description": "Total number of risk observations across all routes."
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/RouteRiskRecordResponse"
+            },
+            "type": "array",
+            "title": "Results",
+            "description": "Per-observation risk records sorted by (route_id, timestamp)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode",
+          "best_model_name",
+          "capacity",
+          "mode_sigma",
+          "num_observations",
+          "results"
+        ],
+        "title": "RiskAssessmentResponse",
+        "description": "Full route-level risk assessment response for a transport mode.\n\nContains one RouteRiskRecordResponse per (route, test-timestamp) pair,\nsorted by (route_id, timestamp). Use this endpoint when you need\nper-observation detail."
+      },
+      "RiskDistributionItem": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Risk band name: 'Low', 'Medium', 'High', or 'Critical'."
+          },
+          "value": {
+            "type": "integer",
+            "title": "Value",
+            "description": "Number of routes in this risk band."
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "value"
+        ],
+        "title": "RiskDistributionItem",
+        "description": "Count of routes within a categorical risk band."
+      },
+      "RiskSummaryResponse": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "title": "Mode",
+            "description": "Canonical transport mode ('RAILWAY' or 'BUS')."
+          },
+          "best_model_name": {
+            "type": "string",
+            "title": "Best Model Name",
+            "description": "Phase 4 model selected by lowest held-out RMSE."
+          },
+          "capacity": {
+            "type": "integer",
+            "title": "Capacity",
+            "description": "Per-vehicle passenger capacity for this mode."
+          },
+          "mode_sigma": {
+            "type": "number",
+            "title": "Mode Sigma",
+            "description": "Mode-wide uncertainty sigma."
+          },
+          "num_routes_analyzed": {
+            "type": "integer",
+            "title": "Num Routes Analyzed",
+            "description": "Number of distinct routes assessed."
+          },
+          "num_observations": {
+            "type": "integer",
+            "title": "Num Observations",
+            "description": "Total test-partition observations across all routes."
+          },
+          "highest_risk_route": {
+            "type": "string",
+            "title": "Highest Risk Route",
+            "description": "Route ID with the highest average risk score."
+          },
+          "average_risk_score": {
+            "type": "number",
+            "title": "Average Risk Score",
+            "description": "Mean risk score across all route observations (0\u2013100)."
+          },
+          "max_risk_score": {
+            "type": "number",
+            "title": "Max Risk Score",
+            "description": "Maximum risk score across all route observations."
+          },
+          "max_overload_probability": {
+            "type": "number",
+            "title": "Max Overload Probability",
+            "description": "Maximum P(demand > capacity) across all route observations."
+          },
+          "level_counts": {
+            "$ref": "#/components/schemas/LevelCountsResponse",
+            "description": "Count of observations classified at each risk level."
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode",
+          "best_model_name",
+          "capacity",
+          "mode_sigma",
+          "num_routes_analyzed",
+          "num_observations",
+          "highest_risk_route",
+          "average_risk_score",
+          "max_risk_score",
+          "max_overload_probability",
+          "level_counts"
+        ],
+        "title": "RiskSummaryResponse",
+        "description": "Aggregated risk summary for a transport mode.\n\nProvides fleet-level statistics without per-observation detail.\nUse this endpoint for dashboard cards and high-level reporting.\n\nNOTE: All values are derived from the same synthetic demonstration dataset\nas the detailed endpoint. These are not real operational statistics."
+      },
+      "Route": {
+        "properties": {
+          "route_id": {
+            "type": "string",
+            "title": "Route Id",
+            "description": "Unique route identifier (e.g. 'R1' for Railway, 'B1' for Bus)."
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Human-readable corridor or line name."
+          },
+          "mode": {
+            "$ref": "#/components/schemas/TransportMode",
+            "description": "Canonical transport mode."
+          },
+          "color": {
+            "type": "string",
+            "title": "Color",
+            "description": "Hexadecimal brand/line color code for UI visualization."
+          },
+          "stations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Stations",
+            "description": "Ordered list of station/stop names served along the route."
+          },
+          "coordinates": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Coordinates",
+            "description": "Ordered list of [latitude, longitude] demo coordinates defining route trajectory."
+          }
+        },
+        "type": "object",
+        "required": [
+          "route_id",
+          "name",
+          "mode",
+          "color",
+          "stations",
+          "coordinates"
+        ],
+        "title": "Route",
+        "description": "Canonical representation of a transit route."
+      },
+      "RouteInsightResponse": {
+        "properties": {
+          "routeId": {
+            "type": "string",
+            "title": "Routeid",
+            "description": "Transit route identifier (e.g. 'R1', 'B1')."
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Human-readable corridor name."
+          },
+          "color": {
+            "type": "string",
+            "title": "Color",
+            "description": "Brand/line hexadecimal color code."
+          },
+          "predictedDemand": {
+            "type": "number",
+            "title": "Predicteddemand",
+            "description": "Forecast passenger demand for the service window."
+          },
+          "historicalAverage": {
+            "type": "number",
+            "title": "Historicalaverage",
+            "description": "Historical average demand for the corridor."
+          },
+          "capacity": {
+            "type": "integer",
+            "title": "Capacity",
+            "description": "Nominal baseline capacity (baseline buses * vehicle capacity)."
+          },
+          "utilization": {
+            "type": "number",
+            "title": "Utilization",
+            "description": "Utilization ratio (predicted demand / capacity)."
+          },
+          "overcrowdingProbability": {
+            "type": "number",
+            "title": "Overcrowdingprobability",
+            "description": "Probability of demand exceeding capacity."
+          },
+          "risk": {
+            "type": "string",
+            "title": "Risk",
+            "description": "Categorical risk band: 'Low', 'Medium', 'High', or 'Critical'."
+          },
+          "recommendedBuses": {
+            "type": "integer",
+            "title": "Recommendedbuses",
+            "description": "Optimized vehicle allocation."
+          },
+          "baselineBuses": {
+            "type": "integer",
+            "title": "Baselinebuses",
+            "description": "Standard baseline vehicle allocation."
+          },
+          "stations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Stations",
+            "description": "Ordered list of station names along the corridor."
+          },
+          "coordinates": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Coordinates",
+            "description": "List of [latitude, longitude] route points."
+          }
+        },
+        "type": "object",
+        "required": [
+          "routeId",
+          "name",
+          "color",
+          "predictedDemand",
+          "historicalAverage",
+          "capacity",
+          "utilization",
+          "overcrowdingProbability",
+          "risk",
+          "recommendedBuses",
+          "baselineBuses",
+          "stations",
+          "coordinates"
+        ],
+        "title": "RouteInsightResponse",
+        "description": "Corridor-level insight combining route definition, demand forecast, and risk."
+      },
+      "RouteRiskRecordResponse": {
+        "properties": {
+          "route_id": {
+            "type": "string",
+            "title": "Route Id",
+            "description": "Transit route identifier (e.g. 'R1', 'B2')."
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp",
+            "description": "ISO 8601 observation timestamp from the test partition."
+          },
+          "predicted_demand_raw": {
+            "type": "number",
+            "title": "Predicted Demand Raw",
+            "description": "Unmodified ML model prediction. May be negative for low-demand periods under linear regression. Preserved for transparency."
+          },
+          "effective_demand": {
+            "type": "number",
+            "title": "Effective Demand",
+            "description": "max(0, predicted_demand_raw) used for utilization and probability calculations."
+          },
+          "capacity": {
+            "type": "integer",
+            "title": "Capacity",
+            "description": "Nominal per-vehicle passenger capacity for this mode."
+          },
+          "utilization_ratio": {
+            "type": "number",
+            "title": "Utilization Ratio",
+            "description": "effective_demand / capacity. Values > 1.0 indicate predicted overload."
+          },
+          "utilization_percentage": {
+            "type": "number",
+            "title": "Utilization Percentage",
+            "description": "utilization_ratio * 100 (for display)."
+          },
+          "utilization_label": {
+            "type": "string",
+            "title": "Utilization Label",
+            "description": "Descriptive utilization band: 'Low utilization', 'Moderate utilization', 'High utilization', or 'Overload'."
+          },
+          "uncertainty_sigma": {
+            "type": "number",
+            "title": "Uncertainty Sigma",
+            "description": "Estimated prediction uncertainty: standard deviation of held-out test-set residuals (y_true - y_pred). Used as sigma in the Normal(demand, sigma\u00b2) uncertainty model."
+          },
+          "overload_probability": {
+            "type": "number",
+            "title": "Overload Probability",
+            "description": "P(demand > capacity) under Normal(effective_demand, sigma\u00b2) model. Value in [0.0, 1.0]. 0.5 means the model expects equal chance of demand being above or below capacity."
+          },
+          "risk_score": {
+            "type": "number",
+            "title": "Risk Score",
+            "description": "Composite risk score in [0.0, 100.0]. = 0.60 * min(utilization_ratio * 100, 100) + 0.40 * overload_probability * 100."
+          },
+          "risk_level": {
+            "type": "string",
+            "title": "Risk Level",
+            "description": "Categorical risk classification: LOW (0\u201324), MEDIUM (25\u201349), HIGH (50\u201374), CRITICAL (75\u2013100). May be elevated to HIGH if overload_probability >= 0.50 regardless of score."
+          },
+          "level_elevated": {
+            "type": "boolean",
+            "title": "Level Elevated",
+            "description": "True if risk_level was elevated from LOW or MEDIUM to HIGH because overload_probability >= 0.50."
+          },
+          "sigma_source": {
+            "type": "string",
+            "title": "Sigma Source",
+            "description": "'route-level' if sigma was estimated from a per-route model evaluation; 'mode-wide-fallback' if the mode-wide sigma was used instead."
+          },
+          "model_name": {
+            "type": "string",
+            "title": "Model Name",
+            "description": "Phase 4 model whose predictions were used (selected by lowest held-out RMSE)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "route_id",
+          "timestamp",
+          "predicted_demand_raw",
+          "effective_demand",
+          "capacity",
+          "utilization_ratio",
+          "utilization_percentage",
+          "utilization_label",
+          "uncertainty_sigma",
+          "overload_probability",
+          "risk_score",
+          "risk_level",
+          "level_elevated",
+          "sigma_source",
+          "model_name"
+        ],
+        "title": "RouteRiskRecordResponse",
+        "description": "Risk assessment result for a single (route, timestamp) observation.\n\nExposes all risk dimensions so that frontend components can explain\nexactly how the risk_score was computed."
+      },
+      "SeasonalityEndpointResponse": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "title": "Mode"
+          },
+          "route_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Route Id"
+          },
+          "total_samples": {
+            "type": "integer",
+            "title": "Total Samples"
+          },
+          "fundamental_frequency": {
+            "type": "number",
+            "title": "Fundamental Frequency"
+          },
+          "mean_demand": {
+            "type": "number",
+            "title": "Mean Demand"
+          },
+          "variance": {
+            "type": "number",
+            "title": "Variance"
+          },
+          "dominant_harmonics": {
+            "items": {
+              "$ref": "#/components/schemas/HarmonicResponse"
+            },
+            "type": "array",
+            "title": "Dominant Harmonics"
+          },
+          "reconstruction_r2": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reconstruction R2"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode",
+          "total_samples",
+          "fundamental_frequency",
+          "mean_demand",
+          "variance",
+          "dominant_harmonics"
+        ],
+        "title": "SeasonalityEndpointResponse",
+        "description": "Endpoint response for Fourier / FFT cyclical seasonality decomposition."
+      },
+      "SimulationInput": {
+        "properties": {
+          "availableBuses": {
+            "type": "integer",
+            "title": "Availablebuses",
+            "default": 4
+          },
+          "rainfall": {
+            "type": "number",
+            "title": "Rainfall",
+            "default": 0.0
+          },
+          "temperature": {
+            "type": "number",
+            "title": "Temperature",
+            "default": 20.0
+          },
+          "demandMultiplier": {
+            "type": "number",
+            "title": "Demandmultiplier",
+            "default": 1.0
+          },
+          "isHoliday": {
+            "type": "boolean",
+            "title": "Isholiday",
+            "default": false
+          },
+          "specialEvent": {
+            "type": "boolean",
+            "title": "Specialevent",
+            "default": false
+          },
+          "unavailableRoute": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unavailableroute"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          }
+        },
+        "type": "object",
+        "title": "SimulationInput",
+        "description": "What-if stress-testing scenario conditions."
+      },
+      "SimulationResult": {
+        "properties": {
+          "baseline": {
+            "$ref": "#/components/schemas/SimulationScenarioSummary"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/SimulationScenarioSummary"
+          },
+          "routes": {
+            "items": {
+              "$ref": "#/components/schemas/RouteInsightResponse"
+            },
+            "type": "array",
+            "title": "Routes"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          }
+        },
+        "type": "object",
+        "required": [
+          "baseline",
+          "scenario",
+          "routes",
+          "label"
+        ],
+        "title": "SimulationResult",
+        "description": "Comparison of baseline versus stressed operational scenario."
+      },
+      "SimulationScenarioSummary": {
+        "properties": {
+          "demand": {
+            "type": "number",
+            "title": "Demand"
+          },
+          "risk": {
+            "type": "number",
+            "title": "Risk"
+          },
+          "buses": {
+            "type": "integer",
+            "title": "Buses"
+          },
+          "objectiveValue": {
+            "type": "number",
+            "title": "Objectivevalue"
+          }
+        },
+        "type": "object",
+        "required": [
+          "demand",
+          "risk",
+          "buses",
+          "objectiveValue"
+        ],
+        "title": "SimulationScenarioSummary",
+        "description": "High-level summary of baseline vs scenario metrics."
+      },
+      "SupportedTransportModesResponse": {
+        "properties": {
+          "modes": {
+            "items": {
+              "$ref": "#/components/schemas/TransportMode"
+            },
+            "type": "array",
+            "title": "Modes",
+            "description": "Canonical transport-mode values accepted by this backend."
+          }
+        },
+        "type": "object",
+        "required": [
+          "modes"
+        ],
+        "title": "SupportedTransportModesResponse",
+        "description": "Modes currently accepted by the FastAPI transport boundary."
+      },
+      "TransportMode": {
+        "type": "string",
+        "enum": [
+          "RAILWAY",
+          "BUS"
+        ],
+        "title": "TransportMode",
+        "description": "Transport modes recognized by the application domain."
+      },
+      "TransportModeValidationResponse": {
+        "properties": {
+          "mode": {
+            "$ref": "#/components/schemas/TransportMode",
+            "description": "Canonical, normalized transport mode."
+          },
+          "supported": {
+            "type": "boolean",
+            "title": "Supported",
+            "description": "Whether the backend recognizes this mode.",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode"
+        ],
+        "title": "TransportModeValidationResponse",
+        "description": "Result of validating a mode at an API boundary."
+      },
+      "UploadDatasetPayload": {
+        "properties": {
+          "data": {
+            "type": "string",
+            "title": "Data",
+            "description": "Raw CSV text content."
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "UploadDatasetPayload",
+        "description": "Payload containing raw CSV string for dataset intake."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
