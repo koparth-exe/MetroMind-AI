@@ -70,5 +70,11 @@ export default defineConfig({
     port,
     host: '0.0.0.0',
     allowedHosts: true,
+    proxy: {
+      '/api': {
+        target: process.env.BACKEND_URL || 'https://metromind-ai-production.up.railway.app',
+        changeOrigin: true,
+      },
+    },
   },
 });
