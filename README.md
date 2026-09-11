@@ -15,6 +15,12 @@
   <img src="https://img.shields.io/badge/Tests-222%20Passed-brightgreen?style=flat" alt="Tests" />
 </p>
 
+<p align="center">
+  <a href="https://metro-mind-ai-metromind-ai.vercel.app">
+    <img src="https://img.shields.io/badge/🚀_LIVE_DEMO-Open_MetroMind_AI-00C896?style=for-the-badge" alt="Live Demo" />
+  </a>
+</p>
+
 ---
 
 MetroMind AI is a multi-modal public transit intelligence platform designed to forecast passenger demand, quantify corridor overcrowding risk, optimize fleet allocation under operational constraints, simulate environmental stress scenarios, and translate mathematical signals into actionable executive review notes.
