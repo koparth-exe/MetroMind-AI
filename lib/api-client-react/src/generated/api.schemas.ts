@@ -9,6 +9,10 @@ export interface HealthStatus {
   status: string;
 }
 
+export interface UploadDatasetInput {
+  data: string;
+}
+
 export interface RouteInsight {
   routeId: string;
   name: string;

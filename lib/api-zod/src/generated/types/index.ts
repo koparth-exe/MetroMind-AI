@@ -37,3 +37,4 @@ export * from './simulationInput';
 export * from './simulationResult';
 export * from './simulationResultBaseline';
 export * from './simulationResultScenario';
+export * from './uploadDatasetInput';

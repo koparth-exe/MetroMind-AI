@@ -1,4 +1,7 @@
-# MetroMind AI
+# MetroMind AI [Historical Prototype Notes]
+
+> [!NOTE]
+> **Historical Documentation**: This document records the early Express.js prototype architecture and is maintained for historical reference. The active, canonical production application uses the **FastAPI Python backend** located in `backend/` and the **React / Vite / TypeScript frontend** in `artifacts/metromind-ai/`. For the authoritative project guide, architecture, and setup instructions, refer to the root [README.md](README.md).
 
 An academic decision-support app that forecasts public-transport demand and turns uncertainty into route-level fleet recommendations.
 

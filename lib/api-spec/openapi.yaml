@@ -30,11 +30,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
-  /dashboard:
+  /data/dashboard/{mode}:
     get:
       operationId: getDashboard
       tags: [dashboard]
-      summary: Get the complete current decision-support summary
+      summary: Get the complete current decision-support summary for a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
       responses:
         "200":
           description: Dashboard summary
@@ -42,11 +49,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Dashboard"
-  /data/summary:
+  /data/summary/{mode}:
     get:
       operationId: getDataSummary
       tags: [data]
-      summary: Get the active dataset quality summary
+      summary: Get the active dataset quality summary for a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
       responses:
         "200":
           description: Dataset summary
@@ -54,11 +68,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DataSummary"
-  /data/demo:
+  /data/demo/{mode}:
     post:
       operationId: loadDemoDataset
       tags: [data]
-      summary: Load the reproducible synthetic demonstration dataset
+      summary: Reset and load the demonstration dataset for a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
       responses:
         "200":
           description: Loaded dataset summary
@@ -66,17 +87,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DataSummary"
-  /data/upload:
+  /data/upload/{mode}:
     post:
       operationId: uploadDataset
       tags: [data]
-      summary: Upload a CSV dataset
+      summary: Upload a CSV dataset for a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
       requestBody:
         required: true
         content:
-          text/csv:
+          application/json:
             schema:
-              type: string
+              $ref: "#/components/schemas/UploadDatasetInput"
       responses:
         "200":
           description: Uploaded dataset summary
@@ -86,11 +114,18 @@ paths:
                 $ref: "#/components/schemas/DataSummary"
         "400":
           description: Invalid CSV
-  /analysis:
+  /math/analysis/{mode}:
     get:
       operationId: getAnalysis
       tags: [analysis]
-      summary: Get correlation, regression, and Fourier analysis
+      summary: Get correlation, regression, and Fourier analysis for a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
       responses:
         "200":
           description: Mathematical analysis
@@ -98,11 +133,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Analysis"
-  /prediction:
+  /math/predict/{mode}:
     post:
       operationId: predictDemand
       tags: [prediction]
-      summary: Predict demand for a planning scenario
+      summary: Predict demand for a planning scenario on a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
       requestBody:
         required: true
         content:
@@ -116,11 +158,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PredictionResult"
-  /models:
+  /math/models-summary/{mode}:
     get:
       operationId: compareModels
       tags: [prediction]
-      summary: Compare local ML models on a time-ordered holdout
+      summary: Compare local ML models on a time-ordered holdout for a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
       responses:
         "200":
           description: Model comparison
@@ -128,11 +177,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ModelComparison"
-  /risk:
+  /risk/{mode}/calculate:
     post:
       operationId: calculateRisk
       tags: [risk]
-      summary: Calculate capacity exceedance probability from residual uncertainty
+      summary: Calculate capacity exceedance probability from residual uncertainty for a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
       requestBody:
         required: true
         content:
@@ -146,11 +202,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/RiskResult"
-  /optimization:
+  /math/optimize/{mode}:
     post:
       operationId: solveOptimization
       tags: [optimization]
-      summary: Allocate available buses to routes
+      summary: Allocate available fleet to routes for a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
       requestBody:
         required: true
         content:
@@ -159,16 +222,23 @@ paths:
               $ref: "#/components/schemas/OptimizationInput"
       responses:
         "200":
-          description: Optimized bus allocation
+          description: Optimized vehicle allocation
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/OptimizationResult"
-  /simulation:
+  /math/simulate/{mode}:
     post:
       operationId: runSimulation
       tags: [simulation]
-      summary: Recalculate the pipeline for a what-if scenario
+      summary: Recalculate pipeline for a what-if scenario on a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
       requestBody:
         required: true
         content:
@@ -182,11 +252,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SimulationResult"
-  /routes:
+  /data/route-insights/{mode}:
     get:
       operationId: getRoutes
       tags: [routes]
-      summary: Get route demand, risk, and demonstration map coordinates
+      summary: Get route demand, risk, and demonstration map coordinates for a transport mode
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
       responses:
         "200":
           description: Route intelligence
@@ -196,29 +273,18 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/RouteInsight"
-  /ai/explain:
-    post:
-      operationId: explainResults
-      tags: [ai]
-      summary: Explain already-calculated evidence in plain language
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ExplanationInput"
-      responses:
-        "200":
-          description: Explanation
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Explanation"
-  /insights/explain:
+  /math/explain/{mode}:
     post:
       operationId: explainInsights
       tags: [ai]
-      summary: Generate a Gemini operational review note from mathematical evidence
+      summary: Generate operational review synthesis from mathematical evidence
+      parameters:
+        - name: mode
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [RAILWAY, BUS]
       requestBody:
         required: true
         content:
@@ -227,11 +293,12 @@ paths:
               $ref: "#/components/schemas/ExplanationInput"
       responses:
         "200":
-          description: Gemini explanation or explicit local fallback
+          description: Operational review synthesis
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Explanation"
+
 components:
   schemas:
     HealthStatus:
@@ -239,6 +306,12 @@ components:
       properties:
         status: { type: string }
       required: [status]
+    UploadDatasetInput:
+      type: object
+      properties:
+        data:
+          type: string
+      required: [data]
     RouteInsight:
       type: object
       properties:

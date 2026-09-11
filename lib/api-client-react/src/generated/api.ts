@@ -35,7 +35,8 @@ import type {
   RiskResult,
   RouteInsight,
   SimulationInput,
-  SimulationResult
+  SimulationResult,
+  UploadDatasetInput
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -142,20 +143,20 @@ export function useHealthCheck<TData = Awaited<ReturnType<typeof healthCheck>>, 
 
 
 
-export const getGetDashboardUrl = () => {
+export const getGetDashboardUrl = (mode: 'RAILWAY' | 'BUS',) => {
 
 
 
 
-  return `/api/dashboard`
+  return `/api/data/dashboard/${mode}`
 }
 
 /**
- * @summary Get the complete current decision-support summary
+ * @summary Get the complete current decision-support summary for a transport mode
  */
-export const getDashboard = async ( options?: Parameters<typeof customFetch>[1]): Promise<Dashboard> => {
+export const getDashboard = async (mode: 'RAILWAY' | 'BUS', options?: Parameters<typeof customFetch>[1]): Promise<Dashboard> => {
 
-  return customFetch<Dashboard>(getGetDashboardUrl(),
+  return customFetch<Dashboard>(getGetDashboardUrl(mode),
   {
     ...options,
     method: 'GET'
@@ -168,29 +169,29 @@ export const getDashboard = async ( options?: Parameters<typeof customFetch>[1])
 
 
 
-export const getGetDashboardQueryKey = () => {
+export const getGetDashboardQueryKey = (mode: 'RAILWAY' | 'BUS',) => {
     return [
-    `/api/dashboard`
+    `/api/data/dashboard/${mode}`
     ] as const;
     }
 
 
-export const getGetDashboardQueryOptions = <TData = Awaited<ReturnType<typeof getDashboard>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDashboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+export const getGetDashboardQueryOptions = <TData = Awaited<ReturnType<typeof getDashboard>>, TError = ErrorType<unknown>>(mode: 'RAILWAY' | 'BUS', options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDashboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetDashboardQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetDashboardQueryKey(mode);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDashboard>>> = ({ signal }) => getDashboard({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDashboard>>> = ({ signal }) => getDashboard(mode, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDashboard>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, enabled: mode !== null && mode !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDashboard>>, TError, TData> & { queryKey: QueryKey }
 }
 
 export type GetDashboardQueryResult = NonNullable<Awaited<ReturnType<typeof getDashboard>>>
@@ -198,15 +199,15 @@ export type GetDashboardQueryError = ErrorType<unknown>
 
 
 /**
- * @summary Get the complete current decision-support summary
+ * @summary Get the complete current decision-support summary for a transport mode
  */
 
 export function useGetDashboard<TData = Awaited<ReturnType<typeof getDashboard>>, TError = ErrorType<unknown>>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDashboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+ mode: 'RAILWAY' | 'BUS', options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDashboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
-  const queryOptions = getGetDashboardQueryOptions(options)
+  const queryOptions = getGetDashboardQueryOptions(mode,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -219,20 +220,20 @@ export function useGetDashboard<TData = Awaited<ReturnType<typeof getDashboard>>
 
 
 
-export const getGetDataSummaryUrl = () => {
+export const getGetDataSummaryUrl = (mode: 'RAILWAY' | 'BUS',) => {
 
 
 
 
-  return `/api/data/summary`
+  return `/api/data/summary/${mode}`
 }
 
 /**
- * @summary Get the active dataset quality summary
+ * @summary Get the active dataset quality summary for a transport mode
  */
-export const getDataSummary = async ( options?: Parameters<typeof customFetch>[1]): Promise<DataSummary> => {
+export const getDataSummary = async (mode: 'RAILWAY' | 'BUS', options?: Parameters<typeof customFetch>[1]): Promise<DataSummary> => {
 
-  return customFetch<DataSummary>(getGetDataSummaryUrl(),
+  return customFetch<DataSummary>(getGetDataSummaryUrl(mode),
   {
     ...options,
     method: 'GET'
@@ -245,29 +246,29 @@ export const getDataSummary = async ( options?: Parameters<typeof customFetch>[1
 
 
 
-export const getGetDataSummaryQueryKey = () => {
+export const getGetDataSummaryQueryKey = (mode: 'RAILWAY' | 'BUS',) => {
     return [
-    `/api/data/summary`
+    `/api/data/summary/${mode}`
     ] as const;
     }
 
 
-export const getGetDataSummaryQueryOptions = <TData = Awaited<ReturnType<typeof getDataSummary>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDataSummary>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+export const getGetDataSummaryQueryOptions = <TData = Awaited<ReturnType<typeof getDataSummary>>, TError = ErrorType<unknown>>(mode: 'RAILWAY' | 'BUS', options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDataSummary>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetDataSummaryQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetDataSummaryQueryKey(mode);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDataSummary>>> = ({ signal }) => getDataSummary({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDataSummary>>> = ({ signal }) => getDataSummary(mode, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDataSummary>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, enabled: mode !== null && mode !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDataSummary>>, TError, TData> & { queryKey: QueryKey }
 }
 
 export type GetDataSummaryQueryResult = NonNullable<Awaited<ReturnType<typeof getDataSummary>>>
@@ -275,15 +276,15 @@ export type GetDataSummaryQueryError = ErrorType<unknown>
 
 
 /**
- * @summary Get the active dataset quality summary
+ * @summary Get the active dataset quality summary for a transport mode
  */
 
 export function useGetDataSummary<TData = Awaited<ReturnType<typeof getDataSummary>>, TError = ErrorType<unknown>>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDataSummary>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+ mode: 'RAILWAY' | 'BUS', options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDataSummary>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
-  const queryOptions = getGetDataSummaryQueryOptions(options)
+  const queryOptions = getGetDataSummaryQueryOptions(mode,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -296,20 +297,20 @@ export function useGetDataSummary<TData = Awaited<ReturnType<typeof getDataSumma
 
 
 
-export const getLoadDemoDatasetUrl = () => {
+export const getLoadDemoDatasetUrl = (mode: 'RAILWAY' | 'BUS',) => {
 
 
 
 
-  return `/api/data/demo`
+  return `/api/data/demo/${mode}`
 }
 
 /**
- * @summary Load the reproducible synthetic demonstration dataset
+ * @summary Reset and load the demonstration dataset for a transport mode
  */
-export const loadDemoDataset = async ( options?: Parameters<typeof customFetch>[1]): Promise<DataSummary> => {
+export const loadDemoDataset = async (mode: 'RAILWAY' | 'BUS', options?: Parameters<typeof customFetch>[1]): Promise<DataSummary> => {
 
-  return customFetch<DataSummary>(getLoadDemoDatasetUrl(),
+  return customFetch<DataSummary>(getLoadDemoDatasetUrl(mode),
   {
     ...options,
     method: 'POST'
@@ -325,8 +326,8 @@ export const loadDemoDataset = async ( options?: Parameters<typeof customFetch>[
 export const getLoadDemoDatasetMutationKey = () => ['loadDemoDataset'] as const;
 
 export const getLoadDemoDatasetMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof loadDemoDataset>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof loadDemoDataset>>, TError,void, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof loadDemoDataset>>, TError,LoadDemoDatasetMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof loadDemoDataset>>, TError,LoadDemoDatasetMutationVariables, TContext> => {
 
 const mutationKey = getLoadDemoDatasetMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -338,10 +339,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof loadDemoDataset>>, void> = () => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof loadDemoDataset>>, LoadDemoDatasetMutationVariables> = (props) => {
+          const {mode} = props ?? {};
 
-
-          return  loadDemoDataset(requestOptions)
+          return  loadDemoDataset(mode,requestOptions)
         }
 
 
@@ -354,34 +355,35 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type LoadDemoDatasetMutationResult = NonNullable<Awaited<ReturnType<typeof loadDemoDataset>>>
 
     export type LoadDemoDatasetMutationError = ErrorType<unknown>
-
+    export type LoadDemoDatasetMutationVariables = {mode: 'RAILWAY' | 'BUS'}
 
     /**
- * @summary Load the reproducible synthetic demonstration dataset
+ * @summary Reset and load the demonstration dataset for a transport mode
  */
 export const useLoadDemoDataset = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof loadDemoDataset>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof loadDemoDataset>>, TError,LoadDemoDatasetMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof loadDemoDataset>>,
         TError,
-        void,
+        LoadDemoDatasetMutationVariables,
         TContext
       > => {
       return useMutation(getLoadDemoDatasetMutationOptions(options));
     }
 
-export const getUploadDatasetUrl = () => {
+export const getUploadDatasetUrl = (mode: 'RAILWAY' | 'BUS',) => {
 
 
 
 
-  return `/api/data/upload`
+  return `/api/data/upload/${mode}`
 }
 
 /**
- * @summary Upload a CSV dataset
+ * @summary Upload a CSV dataset for a transport mode
  */
-export const uploadDataset = async (uploadDatasetBody: string, options?: Parameters<typeof customFetch>[1]): Promise<DataSummary> => {
+export const uploadDataset = async (mode: 'RAILWAY' | 'BUS',
+    uploadDatasetInput: UploadDatasetInput, options?: Parameters<typeof customFetch>[1]): Promise<DataSummary> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -389,12 +391,12 @@ export const uploadDataset = async (uploadDatasetBody: string, options?: Paramet
     if (Array.isArray(h)) return Object.fromEntries(h);
     return h;
   };
-return customFetch<DataSummary>(getUploadDatasetUrl(),
+return customFetch<DataSummary>(getUploadDatasetUrl(mode),
   {
     ...options,
     method: 'POST',
-    headers: { 'Content-Type': 'text/csv', ...getHeaders(options?.headers) },
-    body: JSON.stringify(uploadDatasetBody)
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(uploadDatasetInput)
   }
 );}
 
@@ -419,9 +421,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof uploadDataset>>, UploadDatasetMutationVariables> = (props) => {
-          const {data} = props ?? {};
+          const {mode,data} = props ?? {};
 
-          return  uploadDataset(data,requestOptions)
+          return  uploadDataset(mode,data,requestOptions)
         }
 
 
@@ -432,12 +434,12 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type UploadDatasetMutationResult = NonNullable<Awaited<ReturnType<typeof uploadDataset>>>
-    export type UploadDatasetMutationBody = BodyType<string>
+    export type UploadDatasetMutationBody = BodyType<UploadDatasetInput>
     export type UploadDatasetMutationError = ErrorType<void>
-    export type UploadDatasetMutationVariables = {data: BodyType<string>}
+    export type UploadDatasetMutationVariables = {mode: 'RAILWAY' | 'BUS';data: BodyType<UploadDatasetInput>}
 
     /**
- * @summary Upload a CSV dataset
+ * @summary Upload a CSV dataset for a transport mode
  */
 export const useUploadDataset = <TError = ErrorType<void>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadDataset>>, TError,UploadDatasetMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
@@ -450,20 +452,20 @@ export const useUploadDataset = <TError = ErrorType<void>,
       return useMutation(getUploadDatasetMutationOptions(options));
     }
 
-export const getGetAnalysisUrl = () => {
+export const getGetAnalysisUrl = (mode: 'RAILWAY' | 'BUS',) => {
 
 
 
 
-  return `/api/analysis`
+  return `/api/math/analysis/${mode}`
 }
 
 /**
- * @summary Get correlation, regression, and Fourier analysis
+ * @summary Get correlation, regression, and Fourier analysis for a transport mode
  */
-export const getAnalysis = async ( options?: Parameters<typeof customFetch>[1]): Promise<Analysis> => {
+export const getAnalysis = async (mode: 'RAILWAY' | 'BUS', options?: Parameters<typeof customFetch>[1]): Promise<Analysis> => {
 
-  return customFetch<Analysis>(getGetAnalysisUrl(),
+  return customFetch<Analysis>(getGetAnalysisUrl(mode),
   {
     ...options,
     method: 'GET'
@@ -476,29 +478,29 @@ export const getAnalysis = async ( options?: Parameters<typeof customFetch>[1]):
 
 
 
-export const getGetAnalysisQueryKey = () => {
+export const getGetAnalysisQueryKey = (mode: 'RAILWAY' | 'BUS',) => {
     return [
-    `/api/analysis`
+    `/api/math/analysis/${mode}`
     ] as const;
     }
 
 
-export const getGetAnalysisQueryOptions = <TData = Awaited<ReturnType<typeof getAnalysis>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAnalysis>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+export const getGetAnalysisQueryOptions = <TData = Awaited<ReturnType<typeof getAnalysis>>, TError = ErrorType<unknown>>(mode: 'RAILWAY' | 'BUS', options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAnalysis>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetAnalysisQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetAnalysisQueryKey(mode);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAnalysis>>> = ({ signal }) => getAnalysis({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAnalysis>>> = ({ signal }) => getAnalysis(mode, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAnalysis>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, enabled: mode !== null && mode !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAnalysis>>, TError, TData> & { queryKey: QueryKey }
 }
 
 export type GetAnalysisQueryResult = NonNullable<Awaited<ReturnType<typeof getAnalysis>>>
@@ -506,15 +508,15 @@ export type GetAnalysisQueryError = ErrorType<unknown>
 
 
 /**
- * @summary Get correlation, regression, and Fourier analysis
+ * @summary Get correlation, regression, and Fourier analysis for a transport mode
  */
 
 export function useGetAnalysis<TData = Awaited<ReturnType<typeof getAnalysis>>, TError = ErrorType<unknown>>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAnalysis>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+ mode: 'RAILWAY' | 'BUS', options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAnalysis>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
-  const queryOptions = getGetAnalysisQueryOptions(options)
+  const queryOptions = getGetAnalysisQueryOptions(mode,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -527,18 +529,19 @@ export function useGetAnalysis<TData = Awaited<ReturnType<typeof getAnalysis>>, 
 
 
 
-export const getPredictDemandUrl = () => {
+export const getPredictDemandUrl = (mode: 'RAILWAY' | 'BUS',) => {
 
 
 
 
-  return `/api/prediction`
+  return `/api/math/predict/${mode}`
 }
 
 /**
- * @summary Predict demand for a planning scenario
+ * @summary Predict demand for a planning scenario on a transport mode
  */
-export const predictDemand = async (predictionInput: PredictionInput, options?: Parameters<typeof customFetch>[1]): Promise<PredictionResult> => {
+export const predictDemand = async (mode: 'RAILWAY' | 'BUS',
+    predictionInput: PredictionInput, options?: Parameters<typeof customFetch>[1]): Promise<PredictionResult> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -546,7 +549,7 @@ export const predictDemand = async (predictionInput: PredictionInput, options?: 
     if (Array.isArray(h)) return Object.fromEntries(h);
     return h;
   };
-return customFetch<PredictionResult>(getPredictDemandUrl(),
+return customFetch<PredictionResult>(getPredictDemandUrl(mode),
   {
     ...options,
     method: 'POST',
@@ -576,9 +579,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof predictDemand>>, PredictDemandMutationVariables> = (props) => {
-          const {data} = props ?? {};
+          const {mode,data} = props ?? {};
 
-          return  predictDemand(data,requestOptions)
+          return  predictDemand(mode,data,requestOptions)
         }
 
 
@@ -591,10 +594,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type PredictDemandMutationResult = NonNullable<Awaited<ReturnType<typeof predictDemand>>>
     export type PredictDemandMutationBody = BodyType<PredictionInput>
     export type PredictDemandMutationError = ErrorType<unknown>
-    export type PredictDemandMutationVariables = {data: BodyType<PredictionInput>}
+    export type PredictDemandMutationVariables = {mode: 'RAILWAY' | 'BUS';data: BodyType<PredictionInput>}
 
     /**
- * @summary Predict demand for a planning scenario
+ * @summary Predict demand for a planning scenario on a transport mode
  */
 export const usePredictDemand = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof predictDemand>>, TError,PredictDemandMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
@@ -607,20 +610,20 @@ export const usePredictDemand = <TError = ErrorType<unknown>,
       return useMutation(getPredictDemandMutationOptions(options));
     }
 
-export const getCompareModelsUrl = () => {
+export const getCompareModelsUrl = (mode: 'RAILWAY' | 'BUS',) => {
 
 
 
 
-  return `/api/models`
+  return `/api/math/models-summary/${mode}`
 }
 
 /**
- * @summary Compare local ML models on a time-ordered holdout
+ * @summary Compare local ML models on a time-ordered holdout for a transport mode
  */
-export const compareModels = async ( options?: Parameters<typeof customFetch>[1]): Promise<ModelComparison> => {
+export const compareModels = async (mode: 'RAILWAY' | 'BUS', options?: Parameters<typeof customFetch>[1]): Promise<ModelComparison> => {
 
-  return customFetch<ModelComparison>(getCompareModelsUrl(),
+  return customFetch<ModelComparison>(getCompareModelsUrl(mode),
   {
     ...options,
     method: 'GET'
@@ -633,29 +636,29 @@ export const compareModels = async ( options?: Parameters<typeof customFetch>[1]
 
 
 
-export const getCompareModelsQueryKey = () => {
+export const getCompareModelsQueryKey = (mode: 'RAILWAY' | 'BUS',) => {
     return [
-    `/api/models`
+    `/api/math/models-summary/${mode}`
     ] as const;
     }
 
 
-export const getCompareModelsQueryOptions = <TData = Awaited<ReturnType<typeof compareModels>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof compareModels>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+export const getCompareModelsQueryOptions = <TData = Awaited<ReturnType<typeof compareModels>>, TError = ErrorType<unknown>>(mode: 'RAILWAY' | 'BUS', options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof compareModels>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getCompareModelsQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getCompareModelsQueryKey(mode);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof compareModels>>> = ({ signal }) => compareModels({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof compareModels>>> = ({ signal }) => compareModels(mode, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof compareModels>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, enabled: mode !== null && mode !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof compareModels>>, TError, TData> & { queryKey: QueryKey }
 }
 
 export type CompareModelsQueryResult = NonNullable<Awaited<ReturnType<typeof compareModels>>>
@@ -663,15 +666,15 @@ export type CompareModelsQueryError = ErrorType<unknown>
 
 
 /**
- * @summary Compare local ML models on a time-ordered holdout
+ * @summary Compare local ML models on a time-ordered holdout for a transport mode
  */
 
 export function useCompareModels<TData = Awaited<ReturnType<typeof compareModels>>, TError = ErrorType<unknown>>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof compareModels>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+ mode: 'RAILWAY' | 'BUS', options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof compareModels>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
-  const queryOptions = getCompareModelsQueryOptions(options)
+  const queryOptions = getCompareModelsQueryOptions(mode,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -684,18 +687,19 @@ export function useCompareModels<TData = Awaited<ReturnType<typeof compareModels
 
 
 
-export const getCalculateRiskUrl = () => {
+export const getCalculateRiskUrl = (mode: 'RAILWAY' | 'BUS',) => {
 
 
 
 
-  return `/api/risk`
+  return `/api/risk/${mode}/calculate`
 }
 
 /**
- * @summary Calculate capacity exceedance probability from residual uncertainty
+ * @summary Calculate capacity exceedance probability from residual uncertainty for a transport mode
  */
-export const calculateRisk = async (riskInput: RiskInput, options?: Parameters<typeof customFetch>[1]): Promise<RiskResult> => {
+export const calculateRisk = async (mode: 'RAILWAY' | 'BUS',
+    riskInput: RiskInput, options?: Parameters<typeof customFetch>[1]): Promise<RiskResult> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -703,7 +707,7 @@ export const calculateRisk = async (riskInput: RiskInput, options?: Parameters<t
     if (Array.isArray(h)) return Object.fromEntries(h);
     return h;
   };
-return customFetch<RiskResult>(getCalculateRiskUrl(),
+return customFetch<RiskResult>(getCalculateRiskUrl(mode),
   {
     ...options,
     method: 'POST',
@@ -733,9 +737,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof calculateRisk>>, CalculateRiskMutationVariables> = (props) => {
-          const {data} = props ?? {};
+          const {mode,data} = props ?? {};
 
-          return  calculateRisk(data,requestOptions)
+          return  calculateRisk(mode,data,requestOptions)
         }
 
 
@@ -748,10 +752,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type CalculateRiskMutationResult = NonNullable<Awaited<ReturnType<typeof calculateRisk>>>
     export type CalculateRiskMutationBody = BodyType<RiskInput>
     export type CalculateRiskMutationError = ErrorType<unknown>
-    export type CalculateRiskMutationVariables = {data: BodyType<RiskInput>}
+    export type CalculateRiskMutationVariables = {mode: 'RAILWAY' | 'BUS';data: BodyType<RiskInput>}
 
     /**
- * @summary Calculate capacity exceedance probability from residual uncertainty
+ * @summary Calculate capacity exceedance probability from residual uncertainty for a transport mode
  */
 export const useCalculateRisk = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof calculateRisk>>, TError,CalculateRiskMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
@@ -764,18 +768,19 @@ export const useCalculateRisk = <TError = ErrorType<unknown>,
       return useMutation(getCalculateRiskMutationOptions(options));
     }
 
-export const getSolveOptimizationUrl = () => {
+export const getSolveOptimizationUrl = (mode: 'RAILWAY' | 'BUS',) => {
 
 
 
 
-  return `/api/optimization`
+  return `/api/math/optimize/${mode}`
 }
 
 /**
- * @summary Allocate available buses to routes
+ * @summary Allocate available fleet to routes for a transport mode
  */
-export const solveOptimization = async (optimizationInput: OptimizationInput, options?: Parameters<typeof customFetch>[1]): Promise<OptimizationResult> => {
+export const solveOptimization = async (mode: 'RAILWAY' | 'BUS',
+    optimizationInput: OptimizationInput, options?: Parameters<typeof customFetch>[1]): Promise<OptimizationResult> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -783,7 +788,7 @@ export const solveOptimization = async (optimizationInput: OptimizationInput, op
     if (Array.isArray(h)) return Object.fromEntries(h);
     return h;
   };
-return customFetch<OptimizationResult>(getSolveOptimizationUrl(),
+return customFetch<OptimizationResult>(getSolveOptimizationUrl(mode),
   {
     ...options,
     method: 'POST',
@@ -813,9 +818,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof solveOptimization>>, SolveOptimizationMutationVariables> = (props) => {
-          const {data} = props ?? {};
+          const {mode,data} = props ?? {};
 
-          return  solveOptimization(data,requestOptions)
+          return  solveOptimization(mode,data,requestOptions)
         }
 
 
@@ -828,10 +833,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type SolveOptimizationMutationResult = NonNullable<Awaited<ReturnType<typeof solveOptimization>>>
     export type SolveOptimizationMutationBody = BodyType<OptimizationInput>
     export type SolveOptimizationMutationError = ErrorType<unknown>
-    export type SolveOptimizationMutationVariables = {data: BodyType<OptimizationInput>}
+    export type SolveOptimizationMutationVariables = {mode: 'RAILWAY' | 'BUS';data: BodyType<OptimizationInput>}
 
     /**
- * @summary Allocate available buses to routes
+ * @summary Allocate available fleet to routes for a transport mode
  */
 export const useSolveOptimization = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof solveOptimization>>, TError,SolveOptimizationMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
@@ -844,18 +849,19 @@ export const useSolveOptimization = <TError = ErrorType<unknown>,
       return useMutation(getSolveOptimizationMutationOptions(options));
     }
 
-export const getRunSimulationUrl = () => {
+export const getRunSimulationUrl = (mode: 'RAILWAY' | 'BUS',) => {
 
 
 
 
-  return `/api/simulation`
+  return `/api/math/simulate/${mode}`
 }
 
 /**
- * @summary Recalculate the pipeline for a what-if scenario
+ * @summary Recalculate pipeline for a what-if scenario on a transport mode
  */
-export const runSimulation = async (simulationInput: SimulationInput, options?: Parameters<typeof customFetch>[1]): Promise<SimulationResult> => {
+export const runSimulation = async (mode: 'RAILWAY' | 'BUS',
+    simulationInput: SimulationInput, options?: Parameters<typeof customFetch>[1]): Promise<SimulationResult> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -863,7 +869,7 @@ export const runSimulation = async (simulationInput: SimulationInput, options?: 
     if (Array.isArray(h)) return Object.fromEntries(h);
     return h;
   };
-return customFetch<SimulationResult>(getRunSimulationUrl(),
+return customFetch<SimulationResult>(getRunSimulationUrl(mode),
   {
     ...options,
     method: 'POST',
@@ -893,9 +899,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof runSimulation>>, RunSimulationMutationVariables> = (props) => {
-          const {data} = props ?? {};
+          const {mode,data} = props ?? {};
 
-          return  runSimulation(data,requestOptions)
+          return  runSimulation(mode,data,requestOptions)
         }
 
 
@@ -908,10 +914,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type RunSimulationMutationResult = NonNullable<Awaited<ReturnType<typeof runSimulation>>>
     export type RunSimulationMutationBody = BodyType<SimulationInput>
     export type RunSimulationMutationError = ErrorType<unknown>
-    export type RunSimulationMutationVariables = {data: BodyType<SimulationInput>}
+    export type RunSimulationMutationVariables = {mode: 'RAILWAY' | 'BUS';data: BodyType<SimulationInput>}
 
     /**
- * @summary Recalculate the pipeline for a what-if scenario
+ * @summary Recalculate pipeline for a what-if scenario on a transport mode
  */
 export const useRunSimulation = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof runSimulation>>, TError,RunSimulationMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
@@ -924,20 +930,20 @@ export const useRunSimulation = <TError = ErrorType<unknown>,
       return useMutation(getRunSimulationMutationOptions(options));
     }
 
-export const getGetRoutesUrl = () => {
+export const getGetRoutesUrl = (mode: 'RAILWAY' | 'BUS',) => {
 
 
 
 
-  return `/api/routes`
+  return `/api/data/route-insights/${mode}`
 }
 
 /**
- * @summary Get route demand, risk, and demonstration map coordinates
+ * @summary Get route demand, risk, and demonstration map coordinates for a transport mode
  */
-export const getRoutes = async ( options?: Parameters<typeof customFetch>[1]): Promise<RouteInsight[]> => {
+export const getRoutes = async (mode: 'RAILWAY' | 'BUS', options?: Parameters<typeof customFetch>[1]): Promise<RouteInsight[]> => {
 
-  return customFetch<RouteInsight[]>(getGetRoutesUrl(),
+  return customFetch<RouteInsight[]>(getGetRoutesUrl(mode),
   {
     ...options,
     method: 'GET'
@@ -950,29 +956,29 @@ export const getRoutes = async ( options?: Parameters<typeof customFetch>[1]): P
 
 
 
-export const getGetRoutesQueryKey = () => {
+export const getGetRoutesQueryKey = (mode: 'RAILWAY' | 'BUS',) => {
     return [
-    `/api/routes`
+    `/api/data/route-insights/${mode}`
     ] as const;
     }
 
 
-export const getGetRoutesQueryOptions = <TData = Awaited<ReturnType<typeof getRoutes>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRoutes>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+export const getGetRoutesQueryOptions = <TData = Awaited<ReturnType<typeof getRoutes>>, TError = ErrorType<unknown>>(mode: 'RAILWAY' | 'BUS', options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRoutes>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetRoutesQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getGetRoutesQueryKey(mode);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRoutes>>> = ({ signal }) => getRoutes({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRoutes>>> = ({ signal }) => getRoutes(mode, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRoutes>>, TError, TData> & { queryKey: QueryKey }
+   return  { queryKey, queryFn, enabled: mode !== null && mode !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRoutes>>, TError, TData> & { queryKey: QueryKey }
 }
 
 export type GetRoutesQueryResult = NonNullable<Awaited<ReturnType<typeof getRoutes>>>
@@ -980,15 +986,15 @@ export type GetRoutesQueryError = ErrorType<unknown>
 
 
 /**
- * @summary Get route demand, risk, and demonstration map coordinates
+ * @summary Get route demand, risk, and demonstration map coordinates for a transport mode
  */
 
 export function useGetRoutes<TData = Awaited<ReturnType<typeof getRoutes>>, TError = ErrorType<unknown>>(
-  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRoutes>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+ mode: 'RAILWAY' | 'BUS', options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getRoutes>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
-  const queryOptions = getGetRoutesQueryOptions(options)
+  const queryOptions = getGetRoutesQueryOptions(mode,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
@@ -1001,18 +1007,19 @@ export function useGetRoutes<TData = Awaited<ReturnType<typeof getRoutes>>, TErr
 
 
 
-export const getExplainResultsUrl = () => {
+export const getExplainInsightsUrl = (mode: 'RAILWAY' | 'BUS',) => {
 
 
 
 
-  return `/api/ai/explain`
+  return `/api/math/explain/${mode}`
 }
 
 /**
- * @summary Explain already-calculated evidence in plain language
+ * @summary Generate operational review synthesis from mathematical evidence
  */
-export const explainResults = async (explanationInput: ExplanationInput, options?: Parameters<typeof customFetch>[1]): Promise<Explanation> => {
+export const explainInsights = async (mode: 'RAILWAY' | 'BUS',
+    explanationInput: ExplanationInput, options?: Parameters<typeof customFetch>[1]): Promise<Explanation> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -1020,87 +1027,7 @@ export const explainResults = async (explanationInput: ExplanationInput, options
     if (Array.isArray(h)) return Object.fromEntries(h);
     return h;
   };
-return customFetch<Explanation>(getExplainResultsUrl(),
-  {
-    ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(explanationInput)
-  }
-);}
-
-
-
-
-
-export const getExplainResultsMutationKey = () => ['explainResults'] as const;
-
-export const getExplainResultsMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof explainResults>>, TError,ExplainResultsMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof explainResults>>, TError,ExplainResultsMutationVariables, TContext> => {
-
-const mutationKey = getExplainResultsMutationKey();
-const {mutation: mutationOptions, request: requestOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, request: undefined};
-
-
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof explainResults>>, ExplainResultsMutationVariables> = (props) => {
-          const {data} = props ?? {};
-
-          return  explainResults(data,requestOptions)
-        }
-
-
-
-
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type ExplainResultsMutationResult = NonNullable<Awaited<ReturnType<typeof explainResults>>>
-    export type ExplainResultsMutationBody = BodyType<ExplanationInput>
-    export type ExplainResultsMutationError = ErrorType<unknown>
-    export type ExplainResultsMutationVariables = {data: BodyType<ExplanationInput>}
-
-    /**
- * @summary Explain already-calculated evidence in plain language
- */
-export const useExplainResults = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof explainResults>>, TError,ExplainResultsMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
- ): UseMutationResult<
-        Awaited<ReturnType<typeof explainResults>>,
-        TError,
-        ExplainResultsMutationVariables,
-        TContext
-      > => {
-      return useMutation(getExplainResultsMutationOptions(options));
-    }
-
-export const getExplainInsightsUrl = () => {
-
-
-
-
-  return `/api/insights/explain`
-}
-
-/**
- * @summary Generate a Gemini operational review note from mathematical evidence
- */
-export const explainInsights = async (explanationInput: ExplanationInput, options?: Parameters<typeof customFetch>[1]): Promise<Explanation> => {
-
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Array.isArray(h)) return Object.fromEntries(h);
-    return h;
-  };
-return customFetch<Explanation>(getExplainInsightsUrl(),
+return customFetch<Explanation>(getExplainInsightsUrl(mode),
   {
     ...options,
     method: 'POST',
@@ -1130,9 +1057,9 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
       const mutationFn: MutationFunction<Awaited<ReturnType<typeof explainInsights>>, ExplainInsightsMutationVariables> = (props) => {
-          const {data} = props ?? {};
+          const {mode,data} = props ?? {};
 
-          return  explainInsights(data,requestOptions)
+          return  explainInsights(mode,data,requestOptions)
         }
 
 
@@ -1145,10 +1072,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type ExplainInsightsMutationResult = NonNullable<Awaited<ReturnType<typeof explainInsights>>>
     export type ExplainInsightsMutationBody = BodyType<ExplanationInput>
     export type ExplainInsightsMutationError = ErrorType<unknown>
-    export type ExplainInsightsMutationVariables = {data: BodyType<ExplanationInput>}
+    export type ExplainInsightsMutationVariables = {mode: 'RAILWAY' | 'BUS';data: BodyType<ExplanationInput>}
 
     /**
- * @summary Generate a Gemini operational review note from mathematical evidence
+ * @summary Generate operational review synthesis from mathematical evidence
  */
 export const useExplainInsights = <TError = ErrorType<unknown>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof explainInsights>>, TError,ExplainInsightsMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}

@@ -1,5 +1,42 @@
 # See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
+# Local package manager cache
+.pnpm-store/
+
+# Environment variables / secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Node
+node_modules/
+dist/
+build/
+
+# Local IDE files
+.vscode/
+.idea/
+
+# Development and scratch artifacts
+scratch/
+
+# OS files
+.DS_Store
+Thumbs.db
+
 # compiled output
 dist
 tmp
