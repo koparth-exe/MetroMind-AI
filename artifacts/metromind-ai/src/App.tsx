@@ -5,7 +5,8 @@ import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
 import { MetroShell } from '@/components/metro-shell';
-import { AnalysisPage, DataPage, InsightsPage, ModelsPage, OptimizationPage, OverviewPage, PassengerPage, PredictionPage, RiskPage, RoutesPage, SettingsPage, SimulatorPage } from '@/pages/metro-pages';
+import { TutorialProvider, TutorialOverlay } from '@/components/tutorial-overlay';
+import { AnalysisPage, DataPage, HelpPage, InsightsPage, ModelsPage, OptimizationPage, OverviewPage, PassengerPage, PredictionPage, RiskPage, RoutesPage, SettingsPage, SimulatorPage } from '@/pages/metro-pages';
 import {
   Route,
   Switch,
@@ -32,9 +33,12 @@ function Router() {
           <Route path="/insights" component={InsightsPage} />
           <Route path="/passenger" component={PassengerPage} />
           <Route path="/settings" component={SettingsPage} />
+          <Route path="/help" component={HelpPage} />
           <Route component={NotFound} />
         </Switch>
       </MetroShell>
+      {/* Tutorial overlay mounted inside Router so useLocation works for navigation */}
+      <TutorialOverlay />
     </RoutedErrorBoundary>
   );
 }
@@ -48,9 +52,11 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-          <Router />
-        </WouterRouter>
+        <TutorialProvider>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+            <Router />
+          </WouterRouter>
+        </TutorialProvider>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>

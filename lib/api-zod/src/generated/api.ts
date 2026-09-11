@@ -17,8 +17,12 @@ export const HealthCheckResponse = zod.object({
 
 
 /**
- * @summary Get the complete current decision-support summary
+ * @summary Get the complete current decision-support summary for a transport mode
  */
+export const GetDashboardParams = zod.object({
+  "mode": zod.enum(['RAILWAY', 'BUS'])
+})
+
 export const GetDashboardResponse = zod.object({
   "totalPredictedDemand": zod.number(),
   "highRiskRoutes": zod.number(),
@@ -59,8 +63,12 @@ export const GetDashboardResponse = zod.object({
 
 
 /**
- * @summary Get the active dataset quality summary
+ * @summary Get the active dataset quality summary for a transport mode
  */
+export const GetDataSummaryParams = zod.object({
+  "mode": zod.enum(['RAILWAY', 'BUS'])
+})
+
 export const GetDataSummaryResponse = zod.object({
   "datasetName": zod.string(),
   "isDemo": zod.boolean(),
@@ -79,8 +87,12 @@ export const GetDataSummaryResponse = zod.object({
 
 
 /**
- * @summary Load the reproducible synthetic demonstration dataset
+ * @summary Reset and load the demonstration dataset for a transport mode
  */
+export const LoadDemoDatasetParams = zod.object({
+  "mode": zod.enum(['RAILWAY', 'BUS'])
+})
+
 export const LoadDemoDatasetResponse = zod.object({
   "datasetName": zod.string(),
   "isDemo": zod.boolean(),
@@ -99,8 +111,16 @@ export const LoadDemoDatasetResponse = zod.object({
 
 
 /**
- * @summary Upload a CSV dataset
+ * @summary Upload a CSV dataset for a transport mode
  */
+export const UploadDatasetParams = zod.object({
+  "mode": zod.enum(['RAILWAY', 'BUS'])
+})
+
+export const UploadDatasetBody = zod.object({
+  "data": zod.string()
+})
+
 export const UploadDatasetResponse = zod.object({
   "datasetName": zod.string(),
   "isDemo": zod.boolean(),
@@ -119,8 +139,12 @@ export const UploadDatasetResponse = zod.object({
 
 
 /**
- * @summary Get correlation, regression, and Fourier analysis
+ * @summary Get correlation, regression, and Fourier analysis for a transport mode
  */
+export const GetAnalysisParams = zod.object({
+  "mode": zod.enum(['RAILWAY', 'BUS'])
+})
+
 export const GetAnalysisResponse = zod.object({
   "correlations": zod.array(zod.object({
   "variable": zod.string(),
@@ -156,8 +180,12 @@ export const GetAnalysisResponse = zod.object({
 
 
 /**
- * @summary Predict demand for a planning scenario
+ * @summary Predict demand for a planning scenario on a transport mode
  */
+export const PredictDemandParams = zod.object({
+  "mode": zod.enum(['RAILWAY', 'BUS'])
+})
+
 export const predictDemandBodyHourMin = 0;
 export const predictDemandBodyHourMax = 23;
 
@@ -202,8 +230,12 @@ export const PredictDemandResponse = zod.object({
 
 
 /**
- * @summary Compare local ML models on a time-ordered holdout
+ * @summary Compare local ML models on a time-ordered holdout for a transport mode
  */
+export const CompareModelsParams = zod.object({
+  "mode": zod.enum(['RAILWAY', 'BUS'])
+})
+
 export const CompareModelsResponse = zod.object({
   "metrics": zod.array(zod.object({
   "model": zod.string(),
@@ -218,8 +250,12 @@ export const CompareModelsResponse = zod.object({
 
 
 /**
- * @summary Calculate capacity exceedance probability from residual uncertainty
+ * @summary Calculate capacity exceedance probability from residual uncertainty for a transport mode
  */
+export const CalculateRiskParams = zod.object({
+  "mode": zod.enum(['RAILWAY', 'BUS'])
+})
+
 
 
 
@@ -252,8 +288,12 @@ export const CalculateRiskResponse = zod.object({
 
 
 /**
- * @summary Allocate available buses to routes
+ * @summary Allocate available fleet to routes for a transport mode
  */
+export const SolveOptimizationParams = zod.object({
+  "mode": zod.enum(['RAILWAY', 'BUS'])
+})
+
 
 
 export const solveOptimizationBodyMinBusesPerRouteMin = 0;
@@ -296,8 +336,12 @@ export const SolveOptimizationResponse = zod.object({
 
 
 /**
- * @summary Recalculate the pipeline for a what-if scenario
+ * @summary Recalculate pipeline for a what-if scenario on a transport mode
  */
+export const RunSimulationParams = zod.object({
+  "mode": zod.enum(['RAILWAY', 'BUS'])
+})
+
 
 export const runSimulationBodyRainfallMin = 0;
 
@@ -350,8 +394,12 @@ export const RunSimulationResponse = zod.object({
 
 
 /**
- * @summary Get route demand, risk, and demonstration map coordinates
+ * @summary Get route demand, risk, and demonstration map coordinates for a transport mode
  */
+export const GetRoutesParams = zod.object({
+  "mode": zod.enum(['RAILWAY', 'BUS'])
+})
+
 export const GetRoutesResponseItem = zod.object({
   "routeId": zod.string(),
   "name": zod.string(),
@@ -371,23 +419,12 @@ export const GetRoutesResponse = zod.array(GetRoutesResponseItem)
 
 
 /**
- * @summary Explain already-calculated evidence in plain language
+ * @summary Generate operational review synthesis from mathematical evidence
  */
-export const ExplainResultsBody = zod.object({
-  "topic": zod.string(),
-  "evidence": zod.string()
+export const ExplainInsightsParams = zod.object({
+  "mode": zod.enum(['RAILWAY', 'BUS'])
 })
 
-export const ExplainResultsResponse = zod.object({
-  "configured": zod.boolean(),
-  "explanation": zod.string(),
-  "evidence": zod.string()
-})
-
-
-/**
- * @summary Generate a Gemini operational review note from mathematical evidence
- */
 export const ExplainInsightsBody = zod.object({
   "topic": zod.string(),
   "evidence": zod.string()
