@@ -11,7 +11,6 @@
   <img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat&logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Vite-7.3-646CFF?style=flat&logo=vite&logoColor=white" alt="Vite" />
   <img src="https://img.shields.io/badge/scikit--learn-1.5-F7931E?style=flat&logo=scikit-learn&logoColor=white" alt="scikit-learn" />
-  <img src="https://img.shields.io/badge/Gemini-AI%20Studio-4285F4?style=flat&logo=google&logoColor=white" alt="Gemini" />
   <img src="https://img.shields.io/badge/Tests-222%20Passed-brightgreen?style=flat" alt="Tests" />
 </p>
 
