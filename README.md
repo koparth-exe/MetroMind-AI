@@ -46,7 +46,7 @@ Without unified predictive models and uncertainty-aware decision tools, dispatch
 MetroMind AI unifies data ingestion, predictive modeling, probabilistic risk assessment, heuristic optimization, and AI narrative synthesis into a single command workbench:
 
 1. **Empirical Signal Extraction**: Quantifies linear (Pearson) and monotonic (Spearman) feature correlations alongside Discrete Fourier Transform (FFT) harmonic cycles.
-2. **Multi-Model Forecasting**: Trains and benchmarks multiple supervised regression models on chronological holdouts, providing 95% confidence intervals derived from empirical validation residuals.
+2. **Multi-Model Forecasting**: Trains and benchmarks multiple supervised regression models on chronological holdouts, providing 95% prediction intervals derived from empirical validation residuals.
 3. **Multi-Dimensional Risk Scoring**: Decouples simple vehicle utilization from normal exceedance probability, computing a composite risk index that identifies acute peak vulnerability.
 4. **Constrained Fleet Allocation**: Solves route vehicle distributions using a deterministic greedy marginal-allocation heuristic that penalizes both residual overcrowding and unused seats.
 5. **Interactive Stress Simulation**: Evaluates network stability against synthetic weather shocks, demand surges, and route suspensions.
@@ -75,7 +75,7 @@ MetroMind AI unifies data ingestion, predictive modeling, probabilistic risk ass
 - **Separation of Risk Dimensions**: Explicitly distinguishes between **Utilization** ($\text{demand} / \text{capacity}$) and **Overload Probability** ($P(\text{demand} > \text{capacity})$).
 - **Composite Risk Scoring**: Weighted combination balancing operational load with tail exceedance risk:
   $$\text{Risk Score} = 0.60 \cdot \min(1.0, \text{utilization}) + 0.40 \cdot P(\text{overload})$$
-- **Categorical Alert Bands**: Transparent categorization into **Low** ($< 0.35$), **Medium** ($0.35 - 0.65$), and **High** ($> 0.65$) risk states.
+- **Categorical Alert Bands**: Transparent categorization into **Low** (score 0–24), **Medium** (25–49), **High** (50–74), and **Critical** (75–100) risk states, with overload probability of 50% or higher elevating the risk level to High.
 
 ### 🚍 Constrained Fleet Optimization
 - **Operational Allocation Engine**: Deterministic constrained greedy marginal-allocation heuristic that assigns available fleet units (trains or buses) to minimize unserved demand while respecting route minimum and maximum vehicle bounds.
@@ -127,9 +127,11 @@ where $\Phi(z)$ is the standard normal cumulative distribution function (CDF).
 ### 5. Composite Risk Index
 To prevent high capacity buffers with high variance from being misclassified, MetroMind AI combines utilization and probability:
 $$\text{Risk Score} = 0.60 \cdot \min(1.0, \text{Utilization}) + 0.40 \cdot P(\text{Overload})$$
-- **Low Risk**: $\text{Score} < 0.35$ (stable operations)
-- **Medium Risk**: $0.35 \le \text{Score} \le 0.65$ (advisory monitoring)
-- **High Risk**: $\text{Score} > 0.65$ (dispatch intervention required)
+- **Low Risk**: Score 0–24 (stable operations)
+- **Medium Risk**: Score 25–49 (advisory monitoring)
+- **High Risk**: Score 50–74 (dispatch intervention required)
+- **Critical Risk**: Score 75–100 (highest operational attention)
+- **Probability escalation**: $P(\text{Overload}) \ge 0.50$ elevates the risk level to at least High
 
 ### 6. Constrained Greedy Fleet Allocation
 Let $k_r$ be the number of vehicles assigned to route $r$, each with passenger capacity $C$.
@@ -161,7 +163,7 @@ The MetroMind AI frontend provides an integrated operations suite:
 - **Passenger View**: Journey-level crowding forecasts, advisory travel windows, and peak departure warnings for commuters.
 - **Data Intake**: CSV ingestion engine with automated validation, schema profiling, and active dataset switching.
 - **Statistical Workbench (Analysis)**: Correlation matrix heatmaps, Fourier harmonic spectrum, and empirical OLS regressions.
-- **Demand Forecasting (Prediction)**: Scenario condition tuning (hour, rainfall, temperature, events) with 95% confidence bands.
+- **Demand Forecasting (Prediction)**: Scenario condition tuning (hour, rainfall, temperature, events) with 95% prediction intervals.
 - **Risk Assessment (Risk)**: Utilization vs. exceedance probability quadrant analysis, risk score distribution, and corridor prioritization.
 - **Fleet Allocation (Optimization)**: Side-by-side comparison of baseline vs. optimized vehicle deployments with overcrowding reduction metrics.
 - **Scenario Simulator (Simulator)**: Stress-testing workbench for extreme weather conditions and corridor closures.
